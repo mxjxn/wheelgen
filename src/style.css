@@ -1,7 +1,0 @@
-/* Import base styles */
-@import './styles/base.css';
-
-/* Import component styles */
-@import './styles/components/app.css';
-@import './styles/components/actions-controls.css';
-@import './styles/components/rings-controls.css';
