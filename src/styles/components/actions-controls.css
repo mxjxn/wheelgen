@@ -1,0 +1,235 @@
+/* ActionsControls component styles */
+
+/* Note: ActionsControls now uses the .ring-control class from rings-controls.css */
+
+/* Header styling for ActionsControls within rings section */
+.ring-control:has(.section-title) {
+  background: rgba(25, 25, 25, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 20px;
+  order: -1; /* Ensure it appears first */
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Auto-rerender section */
+.auto-rerender-section {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(20, 20, 20, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.countdown-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #ccc;
+}
+
+.countdown-label {
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.countdown-timer {
+  font-weight: 700;
+  color: #fff;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.changes-indicator {
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.changes-indicator.has-changes {
+  color: #ff6b6b;
+  animation: pulse 1s infinite;
+}
+
+.rerender-controls {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.toggle-button, .manual-rerender-btn {
+  background: rgba(60, 60, 60, 0.8);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  min-width: 40px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-button:hover, .manual-rerender-btn:hover {
+  background: rgba(80, 80, 80, 0.9);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
+.toggle-button.running {
+  background: rgba(76, 175, 80, 0.8);
+  border-color: rgba(76, 175, 80, 0.6);
+}
+
+.toggle-button.paused {
+  background: rgba(255, 152, 0, 0.8);
+  border-color: rgba(255, 152, 0, 0.6);
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* Action buttons - more compact for header */
+.action-button {
+  width: 100%;
+  margin-bottom: 8px;
+  background: rgba(60, 60, 60, 0.8);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.action-button:hover:not(:disabled) {
+  background: rgba(80, 80, 80, 0.9);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+
+/* Control sections - more compact for header */
+.control-section {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(20, 20, 20, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  /* Blur effect with fallbacks */
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  /* Fallback for browsers that don't support backdrop-filter */
+  background: rgba(20, 20, 20, 0.8);
+}
+
+.control-section:last-child {
+  margin-bottom: 0;
+}
+
+/* Control labels */
+.control-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #ccc;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Range inputs */
+.control-range {
+  width: 100%;
+  accent-color: #888;
+  margin-bottom: 4px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.control-range::-webkit-slider-thumb {
+  background: #888;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.control-range::-webkit-slider-thumb:hover {
+  background: #aaa;
+  transform: scale(1.2);
+}
+
+/* Guides checkbox */
+.guides-checkbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #ccc;
+  font-weight: 500;
+}
+
+.guides-checkbox input {
+  margin-right: 10px;
+  width: 16px;
+  height: 16px;
+  accent-color: #888;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .actions-section {
+    padding: 16px;
+  }
+  
+  .section-title {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  
+  .action-button {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+  
+  .control-section {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+}
+
+/* Browser support detection and fallbacks */
+@supports not (backdrop-filter: blur(5px)) {
+  .actions-section {
+    background: rgba(30, 30, 30, 0.95);
+  }
+  
+  .control-section {
+    background: rgba(20, 20, 20, 0.8);
+  }
+}
