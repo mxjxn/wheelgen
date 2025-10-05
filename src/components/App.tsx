@@ -1,6 +1,8 @@
-import { Component, onMount } from 'solid-js';
-import { hasChanges, initializeArtwork, clearChanges } from '../store/artwork';
+import { Component, onMount, onCleanup } from 'solid-js';
+import { hasChanges, initializeArtwork, clearChanges, forceSave } from '../store/artwork';
 import { RingsControls } from './RingsControls';
+import { RecoveryModal, useRecovery } from './RecoveryModal';
+import { AutosaveStatus } from './AutosaveStatus';
 import type p5 from 'p5';
 
 interface AppProps {
@@ -8,6 +10,8 @@ interface AppProps {
 }
 
 export const App: Component<AppProps> = (props) => {
+  const { showRecovery, closeRecovery } = useRecovery(props.p5Instance);
+
   // Initialize artwork when component mounts
   onMount(() => {
     // Wait for p5 instance to be ready
@@ -21,6 +25,27 @@ export const App: Component<AppProps> = (props) => {
     };
     
     waitForP5();
+
+    // Add keyboard shortcuts
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Ctrl+S or Cmd+S for manual save
+      if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+        event.preventDefault();
+        const success = forceSave();
+        if (success) {
+          console.log('💾 Artwork saved manually');
+        } else {
+          console.warn('⚠️ Failed to save artwork');
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup on unmount
+    onCleanup(() => {
+      document.removeEventListener('keydown', handleKeyDown);
+    });
   });
 
   const handleRequestRedraw = () => {
@@ -36,12 +61,25 @@ export const App: Component<AppProps> = (props) => {
   };
 
   return (
-    <div class="controls-container">
-      {/* Ring Controls with Actions Header */}
-      <RingsControls 
-        getP={() => props.p5Instance}
-        requestRedraw={handleRequestRedraw}
-      />
-    </div>
+    <>
+      <div class="controls-container">
+        {/* Ring Controls with Actions Header */}
+        <RingsControls 
+          getP={() => props.p5Instance}
+          requestRedraw={handleRequestRedraw}
+        />
+      </div>
+      
+      {/* Recovery Modal */}
+      {showRecovery && (
+        <RecoveryModal 
+          p5Instance={props.p5Instance}
+          onClose={closeRecovery}
+        />
+      )}
+      
+      {/* Autosave Status */}
+      <AutosaveStatus />
+    </>
   );
 };

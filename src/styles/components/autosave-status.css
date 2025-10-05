@@ -1,0 +1,77 @@
+/* Autosave Status Styles */
+.autosave-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.status-icon {
+  font-size: 0.9rem;
+}
+
+.status-text {
+  color: inherit;
+}
+
+.status-time {
+  color: inherit;
+  opacity: 0.7;
+  font-size: 0.8rem;
+  margin-left: 4px;
+}
+
+/* Status states */
+.status-ready {
+  background: rgba(34, 197, 94, 0.9);
+  color: white;
+}
+
+.status-saving {
+  background: rgba(59, 130, 246, 0.9);
+  color: white;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.status-saved {
+  background: rgba(34, 197, 94, 0.9);
+  color: white;
+}
+
+.status-unsaved {
+  background: rgba(245, 158, 11, 0.9);
+  color: white;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .autosave-status {
+    bottom: 10px;
+    right: 10px;
+    font-size: 0.8rem;
+    padding: 4px 8px;
+  }
+  
+  .status-time {
+    display: none; /* Hide time on mobile to save space */
+  }
+}

@@ -5,3 +5,6 @@
 @import './styles/components/app.css';
 @import './styles/components/actions-controls.css';
 @import './styles/components/rings-controls.css';
+@import './styles/components/recovery-modal.css';
+@import './styles/components/autosave-status.css';
+@import './styles/components/save-slot-grid.css';

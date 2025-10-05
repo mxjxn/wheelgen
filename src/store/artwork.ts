@@ -1,8 +1,9 @@
-import { createSignal, createMemo } from 'solid-js';
+import { createSignal, createMemo, createEffect } from 'solid-js';
 import type p5 from 'p5';
 import { Ring } from '../model/ring';
 import { generatePalette } from '../core/color';
 import { defaultGrammars } from '../core/constants';
+import { autosaveService } from './autosave';
 
 // Types
 export interface GlobalsState {
@@ -122,8 +123,96 @@ export const clearChanges = () => {
   setHasChanges(false);
 };
 
+// Autosave integration
+let p5Instance: p5 | null = null;
+
+// Set p5 instance for autosave
+export const setP5Instance = (p: p5) => {
+  p5Instance = p;
+};
+
+// Get current artwork state for autosave
+const getCurrentArtworkState = (): ArtworkState => ({
+  rings: rings(),
+  palette: palette(),
+  innerDot: innerDot(),
+  globals: globals(),
+  guidesVisible: guidesVisible(),
+  hasChanges: hasChanges()
+});
+
+// Autosave effect - triggers when hasChanges becomes true
+createEffect(() => {
+  if (hasChanges() && p5Instance) {
+    autosaveService.scheduleSave(getCurrentArtworkState());
+  }
+});
+
+// Load from autosave
+export const loadFromAutosave = (p: p5): boolean => {
+  const savedState = autosaveService.loadFromStorage(p);
+  if (!savedState) return false;
+
+  try {
+    if (savedState.rings) setRings(savedState.rings);
+    if (savedState.palette) setPalette(savedState.palette);
+    if (savedState.innerDot) setInnerDot(savedState.innerDot);
+    if (savedState.globals) setGlobals(savedState.globals);
+    if (savedState.guidesVisible !== undefined) setGuidesVisible(savedState.guidesVisible);
+    
+    setHasChanges(false);
+    autosaveService.clearRecoveryFlag();
+    return true;
+  } catch (error) {
+    console.error('Failed to load from autosave:', error);
+    return false;
+  }
+};
+
+// Load from backup
+export const loadFromBackup = (p: p5): boolean => {
+  const savedState = autosaveService.loadFromBackup(p);
+  if (!savedState) return false;
+
+  try {
+    if (savedState.rings) setRings(savedState.rings);
+    if (savedState.palette) setPalette(savedState.palette);
+    if (savedState.innerDot) setInnerDot(savedState.innerDot);
+    if (savedState.globals) setGlobals(savedState.globals);
+    if (savedState.guidesVisible !== undefined) setGuidesVisible(savedState.guidesVisible);
+    
+    setHasChanges(false);
+    autosaveService.clearRecoveryFlag();
+    return true;
+  } catch (error) {
+    console.error('Failed to load from backup:', error);
+    return false;
+  }
+};
+
+// Check for recovery data
+export const hasRecoveryData = () => autosaveService.hasRecoveryData();
+
+// Force save
+export const forceSave = (): boolean => {
+  if (!p5Instance) return false;
+  return autosaveService.forceSave(getCurrentArtworkState());
+};
+
+// Clear all autosave data
+export const clearAutosaveData = () => {
+  autosaveService.clearAllData();
+  setHasChanges(false);
+};
+
+// Get autosave info
+export const getAutosaveInfo = () => autosaveService.getStorageInfo();
+
 // Initialize artwork function
 export const initializeArtwork = (p: p5) => {
+  // Set p5 instance for autosave
+  setP5Instance(p);
+  
   const numRings = 10;
   const maxRadius = Math.min(p.width, p.height) / 2 * 0.85;
   const minRadius = 50;

@@ -8,8 +8,16 @@ import {
   setGuidesVisible,
   globals,
   updateGlobalSetting,
-  rings
+  rings,
+  palette,
+  innerDot,
+  setRings,
+  setPalette,
+  setInnerDot,
+  setGlobals,
+  setGuidesVisible as setGuidesVisibleState
 } from '../store/artwork';
+import { SaveSlotGrid } from './SaveSlotGrid';
 import type { Ring } from '../model/ring';
 
 // Props interface
@@ -145,9 +153,45 @@ export const ActionsControls: Component<ActionsControlsProps> = (props) => {
     updateGlobalSetting('colorBleed', value);
   };
 
+  // Get current artwork state for save slots
+  const getCurrentArtworkState = () => ({
+    rings: rings(),
+    palette: palette(),
+    innerDot: innerDot(),
+    globals: globals(),
+    guidesVisible: guidesVisible(),
+    hasChanges: hasChanges()
+  });
+
+  // Handle loading from save slot
+  const handleLoadFromSlot = (savedState: any) => {
+    if (savedState.rings) setRings(savedState.rings);
+    if (savedState.palette) setPalette(savedState.palette);
+    if (savedState.innerDot) setInnerDot(savedState.innerDot);
+    if (savedState.globals) setGlobals(savedState.globals);
+    if (savedState.guidesVisible !== undefined) setGuidesVisibleState(savedState.guidesVisible);
+    
+    // Update local signals
+    if (savedState.globals) {
+      setRandomness(savedState.globals.randomness);
+      setStrokeCount(savedState.globals.strokeCount);
+      setColorBleed(savedState.globals.colorBleed);
+    }
+    
+    // Trigger redraw
+    props.requestRedraw();
+  };
+
   return (
     <div class="ring-control">
       <h3 class="section-title">Actions</h3>
+      
+      {/* Save Slot Grid */}
+      <SaveSlotGrid 
+        getP={props.getP}
+        getCurrentState={getCurrentArtworkState}
+        onLoad={handleLoadFromSlot}
+      />
       
       {/* Auto-rerender Controls */}
       <div class="auto-rerender-section">
