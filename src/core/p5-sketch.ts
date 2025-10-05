@@ -1,31 +1,69 @@
 import p5 from 'p5';
-import { Ring } from '../model/ring';
 import { drawInnerDot } from '../model/inner-dot';
 import { 
   rings, 
   palette, 
   innerDot, 
   guidesVisible, 
+  backgroundColor,
   initializeArtwork as initializeArtworkStore 
 } from '../store/artwork';
+import { logRingStrokeData } from '../model/particle';
 
 export function mountSketch(container: HTMLElement) {
   let pInstance: p5 | null = null;
+  let resizeHandler: (() => void) | null = null;
+  let isInitialized = false; // Track if artwork has been initialized
+  let hasLoggedRingData = false; // Track if we've logged ring stroke data
+  
+  
   const sketch = (p: p5) => {
     pInstance = p;
     
     p.setup = () => {
-      // Get the container dimensions instead of full window
-      const containerRect = container.getBoundingClientRect();
-      p.createCanvas(containerRect.width, containerRect.height);
+      
+      // Use full viewport dimensions for full-screen art
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      
+      p.createCanvas(width, height);
       p.noLoop();
       p.background(0);
-      // Initialize full artwork state using new store
-      initializeArtworkStore(p);
+      
+      // Only initialize artwork if not already done
+      if (!isInitialized) {
+        initializeArtworkStore(p);
+        isInitialized = true;
+        hasLoggedRingData = false; // Reset logging flag for new artwork
+      } else {
+      }
+      
+      // Force initial draw
+      p.redraw();
+      
+      // Set up window resize handler for full-screen canvas
+      resizeHandler = () => {
+        if (pInstance) {
+          const width = window.innerWidth;
+          const height = window.innerHeight;
+          pInstance.resizeCanvas(width, height);
+          pInstance.redraw();
+        }
+      };
+      
+      window.addEventListener('resize', resizeHandler);
     };
 
     p.draw = () => {
-      p.background(0);
+      
+      // Use background color from store, fallback to black
+      const bgColor = backgroundColor();
+      if (bgColor) {
+        p.background(bgColor);
+      } else {
+        p.background(0);
+      }
+      
       p.push();
       p.translate(p.width / 2, p.height / 2);
       
@@ -47,7 +85,15 @@ export function mountSketch(container: HTMLElement) {
       
       // Display rings - now reactive to store
       const currentRings = rings();
-      for (const r of currentRings) r.display(p, 1.0);
+      for (const r of currentRings) {
+        r.display(p, 1.0);
+      }
+      
+      // Log ring stroke data on first draw (after particles are created)
+      if (!hasLoggedRingData && isInitialized) {
+        hasLoggedRingData = true;
+        logRingStrokeData(p);
+      }
       
       // Display inner dot - now reactive to store
       const currentInnerDot = innerDot();
@@ -60,12 +106,7 @@ export function mountSketch(container: HTMLElement) {
     };
 
     p.windowResized = () => {
-      // Resize to container dimensions instead of full window
-      const containerRect = container.getBoundingClientRect();
-      p.resizeCanvas(containerRect.width, containerRect.height);
-      // Don't reinitialize artwork on resize - just redraw existing state
-      // The artwork should only be randomly generated on initial load and manual randomize
-      p.redraw();
+      // Don't resize on window resize - let ResizeObserver handle it
     };
   };
 
@@ -76,6 +117,14 @@ export function mountSketch(container: HTMLElement) {
     getP: () => pInstance as p5,
     redraw: () => {
       if (pInstance) pInstance.redraw();
+    },
+    resetLogging: () => {
+      hasLoggedRingData = false;
+    },
+    cleanup: () => {
+      if (resizeHandler) {
+        window.removeEventListener('resize', resizeHandler);
+      }
     },
   };
 }

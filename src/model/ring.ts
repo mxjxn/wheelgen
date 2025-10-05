@@ -4,6 +4,7 @@ import type { SolidRingData } from './types';
 import { alphabet, parseGrammar } from '../core/grammar';
 import { Particle } from './particle';
 import { drawSolidRing } from '../core/alphabet/solid-ring';
+import { globals } from '../store/artwork';
 
 export class Ring {
   public radius: number;
@@ -30,7 +31,8 @@ export class Ring {
     if (this.isSolid) {
       if (!this.solidRingData) return;
       const { radius, width, saturations, baseColor, ringOpacity } = this.solidRingData;
-      const strokeWidth = this.shapeOptions.solid?.strokeWidth?.value ?? 0.1;
+      const baseStrokeWidth = this.shapeOptions.solid?.strokeWidth?.value ?? 0.1;
+      const strokeWidth = Math.max(0.1, baseStrokeWidth + globals().globalStrokeWidth);
       
       drawSolidRing(p, {
         radius,
@@ -73,7 +75,8 @@ export class Ring {
   }
 
   getShapeOptionsFor(symbol: string) {
-    return this.shapeOptions[symbol];
+    const options = this.shapeOptions[symbol];
+    return options;
   }
 
   getAvailableSymbols(): string[] {
@@ -123,10 +126,19 @@ export class Ring {
     // Use full parser with repeats and rotation
     this._pattern = parseGrammar(trimmed) as any;
 
+    // Preserve existing shape options for symbols that remain in the new pattern
+    const existingShapeOptions = { ...this.shapeOptions };
     this.shapeOptions = {};
     const uniqueSymbols = Array.from(new Set(this._pattern.map((it) => it.char))).filter((c) => c !== 'x');
+    
     for (const symbol of uniqueSymbols) {
-      this.shapeOptions[symbol] = this.getDefaultShapeOptions(symbol);
+      // If this symbol existed before, preserve its options
+      if (existingShapeOptions[symbol]) {
+        this.shapeOptions[symbol] = existingShapeOptions[symbol];
+      } else {
+        // Only create defaults for new symbols
+        this.shapeOptions[symbol] = this.getDefaultShapeOptions(symbol);
+      }
     }
     this.regenerateParticles(p);
   }
@@ -171,5 +183,14 @@ export class Ring {
     }
     // Default to ring's base color if no specific color assigned
     return this.baseColor;
+  }
+
+  // Update particles when stroke colors change
+  updateParticlesForStrokeType(strokeType: string, p: p5) {
+    this.particles.forEach(particle => {
+      if (particle.strokeType === strokeType) {
+        particle.updateStrokeData(p);
+      }
+    });
   }
 }

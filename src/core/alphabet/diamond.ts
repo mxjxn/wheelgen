@@ -50,7 +50,15 @@ export function drawCalligraphyDiamond(p: p5, options: DiamondDrawOptions) {
       const x1 = p.lerp((-w / 2) * length * size, (w / 2) * length * size, t);
       const x2 = p.lerp((-w / 2) * length * size, (w / 2) * length * size, (j + 1) / segments);
       const currentAlpha = p.lerp(startAlpha, endAlpha, t);
-      p.stroke(p.red(strokeColor), p.green(strokeColor), p.blue(strokeColor), currentAlpha);
+      
+      // Properly read RGB values regardless of current color mode
+      p.colorMode(p.RGB, 255);
+      const r = Math.round(p.red(strokeColor));
+      const g = Math.round(p.green(strokeColor));
+      const b = Math.round(p.blue(strokeColor));
+      p.colorMode(p.HSB, 360, 100, 100); // Restore HSB mode
+      
+      p.stroke(r, g, b, currentAlpha);
       p.line(x1, yPos, x2, yPos);
     }
   }

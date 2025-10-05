@@ -5,6 +5,7 @@ import {
   createSignal,
   For,
   Show,
+  onCleanup,
 } from "solid-js";
 import {
   rings,
@@ -12,9 +13,10 @@ import {
   updateRing,
   markChanges,
   palette,
+  setStrokeColorAssignment,
+  colorAssignment,
 } from "../store/artwork";
-import { ActionsControls } from "./ActionsControls";
-import { ColorManagementPanel } from "./ColorManagementPanel";
+import { colorToRgbString } from "../core/color";
 
 // Props interface
 interface RingsControlsProps {
@@ -39,7 +41,7 @@ const RingControl: Component<{
     storeRing()?.grammarString || ""
   );
   const [isVisible, setIsVisible] = createSignal(storeRing()?.visible || false);
-  const [isCollapsed, setIsCollapsed] = createSignal(true); // Start collapsed by default
+  const [isUpdating, setIsUpdating] = createSignal(false);
 
   // Update local state when ring changes
   createEffect(() => {
@@ -50,13 +52,38 @@ const RingControl: Component<{
     }
   });
 
-  const handleGrammarChange = (newGrammar: string) => {
-    setGrammarString(newGrammar);
-    const p = props.getP();
-    if (p) {
-      updateRingPattern(props.index, newGrammar.trim(), p);
-      // Don't call requestRedraw here - let the auto-rerender handle it
+  // Debounced rendering for grammar changes
+  let grammarTimeout: ReturnType<typeof setTimeout> | null = null;
+  
+  // Cleanup timeout on unmount
+  onCleanup(() => {
+    if (grammarTimeout) {
+      clearTimeout(grammarTimeout);
     }
+  });
+  
+  const handleGrammarChange = (newGrammar: string) => {
+    // Update text input immediately for responsive typing
+    setGrammarString(newGrammar);
+    
+    // Show updating indicator
+    setIsUpdating(true);
+    
+    // Clear existing timeout
+    if (grammarTimeout) {
+      clearTimeout(grammarTimeout);
+    }
+    
+    // Debounce the expensive art rendering
+    grammarTimeout = setTimeout(() => {
+      const p = props.getP();
+      if (p) {
+        updateRingPattern(props.index, newGrammar.trim(), p);
+        props.requestRedraw();
+      }
+      setIsUpdating(false);
+      grammarTimeout = null;
+    }, 300); // 300ms delay - adjust as needed
   };
 
   const handleVisibilityChange = (checked: boolean) => {
@@ -67,27 +94,6 @@ const RingControl: Component<{
 
   return (
     <div class="ring-control">
-      {/* Collapsed View */}
-      <Show when={isCollapsed()}>
-        <div class="ring-collapsed">
-          <div class="ring-collapsed-header">
-            <span class="ring-number">Ring {props.index}</span>
-            <span class="ring-grammar-display">
-              {grammarString() || "No grammar"}
-            </span>
-            <button
-              onClick={() => setIsCollapsed(false)}
-              class="expand-btn"
-              title="Expand controls"
-            >
-              ▼
-            </button>
-          </div>
-        </div>
-      </Show>
-
-      {/* Expanded View */}
-      <Show when={!isCollapsed()}>
         {/* Ring Header */}
         <div class="ring-header">
           <span>Ring {props.index}</span>
@@ -102,34 +108,32 @@ const RingControl: Component<{
               />
               Visible
             </label>
-            <button
-              onClick={() => setIsCollapsed(true)}
-              class="collapse-btn"
-              title="Collapse controls"
-            >
-              ▲
-            </button>
           </div>
         </div>
 
         {/* Grammar Input */}
         <div class="grammar-row">
           <span>Grammar:</span>
-          <input
-            value={grammarString()}
-            onInput={(e) => handleGrammarChange(e.currentTarget.value)}
-            class="grammar-input"
-            placeholder="Enter grammar (e.g., d3h2v)"
-          />
+          <div class="grammar-input-container">
+            <input
+              value={grammarString()}
+              onInput={(e) => handleGrammarChange(e.currentTarget.value)}
+              class="grammar-input"
+              placeholder="Enter grammar (e.g., d3h2v)"
+            />
+            <Show when={isUpdating()}>
+              <span class="updating-indicator">⟳</span>
+            </Show>
+          </div>
         </div>
 
         {/* Symbol Controls */}
         <SymbolControls
           ringIndex={props.index}
           grammarString={grammarString()}
+          getP={props.getP}
           requestRedraw={props.requestRedraw}
         />
-      </Show>
     </div>
   );
 };
@@ -138,6 +142,7 @@ const RingControl: Component<{
 const SymbolControls: Component<{
   ringIndex: number;
   grammarString: string;
+  getP: () => any;
   requestRedraw: () => void;
 }> = (props) => {
   // Get the ring from the store to ensure reactivity
@@ -147,9 +152,16 @@ const SymbolControls: Component<{
     return ring;
   });
 
+  // Get grammar string directly from the store ring for better reactivity
+  const grammarString = createMemo(() => {
+    const storeRing = ring();
+    const grammar = storeRing?.grammarString || "";
+    return grammar;
+  });
+
   // Parse the grammar string directly to determine available symbols
   const availableSymbols = createMemo(() => {
-    const grammar = props.grammarString?.trim();
+    const grammar = grammarString()?.trim();
     if (!grammar || grammar === "" || grammar === "-") return [];
 
     // Parse the grammar string to get unique symbols (excluding 'x')
@@ -181,7 +193,8 @@ const SymbolControls: Component<{
   // Group symbols by base character and rotation
   const symbolGroups = createMemo(() => {
     const groups = new Map<string, { rotated: boolean; count: number }>();
-    const grammar = props.grammarString?.trim();
+    const grammar = grammarString()?.trim();
+    
     
     if (!grammar || grammar === "" || grammar === "-") return groups;
 
@@ -202,6 +215,7 @@ const SymbolControls: Component<{
       const isUpper = raw === raw.toUpperCase() && raw !== raw.toLowerCase();
       const baseChar = raw.toLowerCase();
 
+
       if ("dhlv".includes(baseChar)) {
         const repeat = numStr === "" ? 1 : parseInt(numStr, 10);
         const key = `${baseChar}${isUpper ? "R" : "N"}`;
@@ -219,16 +233,14 @@ const SymbolControls: Component<{
 
   // Check if ring is solid
   const isSolidRing = createMemo(() => {
-    const grammar = props.grammarString?.trim();
+    const grammar = grammarString()?.trim();
     const isSolid = grammar === "-";
     return isSolid;
   });
 
   return (
     <Show
-      when={Boolean(
-        ring()?.visible && props.grammarString?.trim()
-      )}
+      when={Boolean(ring()?.visible)}
     >
       <div>
         {/* Solid Ring Controls */}
@@ -238,19 +250,20 @@ const SymbolControls: Component<{
 
         {/* Symbol-specific Controls */}
         <Show
-          when={!isSolidRing() && availableSymbols().length > 0}
+          when={!isSolidRing() && availableSymbols().length > 0 && grammarString()?.trim()}
         >
-          <For each={Array.from(symbolGroups().entries())}>
-            {([key, info]) => (
-              <SymbolGroupControls
-                ring={ring()}
-                symbolKey={key}
-                info={info}
-                getP={() => props.getP()}
-                requestRedraw={props.requestRedraw}
-              />
-            )}
-          </For>
+        <For each={Array.from(symbolGroups().entries())}>
+          {([key, info]) => (
+            <SymbolGroupControls
+              ring={ring()}
+              symbolKey={key}
+              info={info}
+              ringIndex={props.ringIndex}
+              getP={props.getP}
+              requestRedraw={props.requestRedraw}
+            />
+          )}
+        </For>
         </Show>
       </div>
     </Show>
@@ -288,19 +301,24 @@ const SymbolGroupControls: Component<{
   ring: any;
   symbolKey: string;
   info: { rotated: boolean; count: number };
+  ringIndex: number;
   getP: () => any;
   requestRedraw: () => void;
 }> = (props) => {
   const baseChar = () => props.symbolKey.charAt(0);
+  
   const opts = createMemo(() => {
     if (!props.ring?.getShapeOptionsFor) return null;
 
+    // Make this memo reactive to grammar changes by accessing the grammar string
+    const grammar = props.ring.grammarString;
+    
     // Ensure the ring has shape options for this symbol
     const symbol = baseChar();
     const shapeOptions = props.ring.getShapeOptionsFor(symbol);
 
     // If shape options don't exist, create default ones
-    if (!shapeOptions && props.ring.grammarString) {
+    if (!shapeOptions && grammar) {
       // This is a fallback - the ring should have shape options set up by setPattern
       return getDefaultShapeOptions(symbol);
     }
@@ -331,11 +349,11 @@ const SymbolGroupControls: Component<{
         </For>
         
         {/* Stroke Color Control */}
-        <Show when={props.ring && props.ring.ringIndex !== undefined}>
+        <Show when={props.ring}>
           <StrokeColorControl
             strokeType={baseChar() as 'd' | 'l' | 'h' | 'v' | '-'}
-            ringIndex={props.ring.ringIndex}
-            getP={() => props.getP()}
+            ringIndex={props.ringIndex}
+            getP={props.getP}
             requestRedraw={props.requestRedraw}
           />
         </Show>
@@ -408,78 +426,63 @@ const StrokeColorControl: Component<{
   // Cached palette colors for efficient rendering
   const paletteColors = createMemo(() => {
     const pal = currentPalette();
+    
     if (!pal || pal.length === 0) {
-      return ['#ffffff', '#ffffff', '#ffffff', '#ffffff'];
+      return [];
     }
     
     try {
       const p = props.getP();
+      
       if (!p) {
-        return pal.map(() => '#ffffff');
+        return [];
       }
       
-      // Convert colors more efficiently by avoiding color mode changes
+      // Convert colors using p5 methods
       const colors = pal.map((color) => {
         try {
-          // Access color levels directly without changing color mode
-          const levels = color.levels;
-          if (levels && levels.length >= 3) {
-            const r = Math.round(levels[0] || 0);
-            const g = Math.round(levels[1] || 0);
-            const b = Math.round(levels[2] || 0);
-            return `rgb(${r}, ${g}, ${b})`;
-          }
-          return '#ffffff';
+          const rgbString = colorToRgbString(p, color);
+          return rgbString;
         } catch (error) {
-          console.warn('Error converting color:', error);
           return '#ffffff';
         }
       });
       
       return colors;
     } catch (error) {
-      console.warn('Error accessing p5 instance:', error);
-      return pal.map(() => '#ffffff');
+      return [];
     }
   });
 
   // Get current color assignment for this stroke type
   const getCurrentColorIndex = createMemo(() => {
     try {
+      const assignment = colorAssignment();
       const currentRings = rings();
       const ring = currentRings[props.ringIndex];
-      if (!ring || !ring.strokeColors) return -1; // -1 = auto (inherit from ring)
-      return ring.strokeColors[props.strokeType] ?? -1;
+      
+      if (!ring) return 0; // Default to first palette color
+      
+      // Check if there's a custom assignment
+      const custom = assignment.customAssignments[props.ringIndex.toString()]?.[props.strokeType];
+      if (custom !== undefined) {
+        return custom;
+      }
+      
+      // Default: use ring index % 4 (simple)
+      return props.ringIndex % 4;
     } catch (error) {
-      console.warn('Error accessing rings:', error);
-      return -1;
+      return 0; // Default to first palette color
     }
   });
 
   // Update color assignment
   const handleColorChange = (colorIndex: number) => {
     try {
-      // Update the ring's stroke color assignment
-      const currentRings = rings();
-      const ring = currentRings[props.ringIndex];
-      if (ring) {
-        if (!ring.strokeColors) {
-          ring.strokeColors = {};
-        }
-        
-        if (colorIndex === -1) {
-          // Auto mode - remove specific assignment
-          delete ring.strokeColors[props.strokeType];
-        } else {
-          // Specific palette color
-          ring.strokeColors[props.strokeType] = colorIndex;
-        }
-        
-        markChanges();
-        props.requestRedraw();
-      }
+      // Set specific color assignment
+      setStrokeColorAssignment(props.ringIndex, props.strokeType, colorIndex);
+      props.requestRedraw();
     } catch (error) {
-      console.warn('Error updating stroke color:', error);
     }
   };
 
@@ -494,23 +497,21 @@ const StrokeColorControl: Component<{
         {props.strokeType.toUpperCase()} Color:
       </label>
       <div class="stroke-color-swatches">
-        {/* Auto option */}
-        <button
-          class={`stroke-color-swatch ${getCurrentColorIndex() === -1 ? 'selected' : ''}`}
-          style="background-color: #666666;"
-          onClick={() => handleColorChange(-1)}
-          title="Auto (inherit from ring color)"
-        />
         {/* Palette color options */}
         <For each={paletteColors()}>
-          {(backgroundColor, index) => (
-            <button
-              class={`stroke-color-swatch ${getCurrentColorIndex() === index() ? 'selected' : ''}`}
-              style={`background-color: ${backgroundColor}`}
-              onClick={() => handleColorChange(index())}
-              title={`Palette Color ${index() + 1}`}
-            />
-          )}
+          {(backgroundColor, index) => {
+            const colorLabel = String.fromCharCode(65 + index()); // A, B, C, D...
+            return (
+              <button
+                class={`stroke-color-swatch ${getCurrentColorIndex() === index() ? 'selected' : ''}`}
+                style={`background-color: ${backgroundColor}`}
+                onClick={() => handleColorChange(index())}
+                title={`Color ${colorLabel}`}
+              >
+                <span class="color-label">{colorLabel}</span>
+              </button>
+            );
+          }}
         </For>
       </div>
     </div>
@@ -519,27 +520,18 @@ const StrokeColorControl: Component<{
 
 // Main RingsControls component
 export const RingsControls: Component<RingsControlsProps> = (props) => {
-  // Sort rings from outer to inner (largest radius to smallest)
+  // Sort rings from outer to inner (largest radius to smallest) - memoized for performance
   const sortedRings = createMemo(() => {
     const currentRings = rings();
     return [...currentRings].sort((a, b) => b.radius - a.radius);
   });
 
   return (
-    <div class="rings-section">
-      <div>
-        {/* Actions Controls as Header */}
-        <ActionsControls
-          getP={props.getP}
-          requestRedraw={props.requestRedraw}
-        />
-        {/* Color Management Panel */}
-        <ColorManagementPanel
-          getP={props.getP}
-          requestRedraw={props.requestRedraw}
-        />
+    <div class="rings-controls">
+      <div class="rings-header">
+        <h3 class="section-title">Ring Controls</h3>
       </div>
-      <div>
+      <div class="rings-grid">
         <For each={sortedRings()}>
           {(ring) => (
             <RingControl

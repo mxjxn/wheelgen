@@ -1,6 +1,6 @@
 import { createSignal, createEffect, Show } from 'solid-js';
 import type p5 from 'p5';
-import { hasRecoveryData, loadFromAutosave, loadFromBackup, clearAutosaveData, getAutosaveInfo } from '../store/artwork';
+import { hasRecoveryData, loadFromAutosave, clearAutosaveData, getAutosaveInfo } from '../store/artwork';
 
 interface RecoveryModalProps {
   p5Instance: p5;
@@ -8,7 +8,6 @@ interface RecoveryModalProps {
 }
 
 export function RecoveryModal(props: RecoveryModalProps) {
-  const [showBackup, setShowBackup] = createSignal(false);
   const [loading, setLoading] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
 
@@ -25,26 +24,6 @@ export function RecoveryModal(props: RecoveryModalProps) {
       }
     } catch (err) {
       setError('Error loading autosave data');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLoadBackup = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const success = loadFromBackup(props.p5Instance);
-      if (success) {
-        props.onClose();
-      } else {
-        setError('Failed to load backup data');
-      }
-    } catch (err) {
-      setError('Error loading backup data');
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -72,10 +51,6 @@ export function RecoveryModal(props: RecoveryModalProps) {
               <span class="value">{(storageInfo.size / 1024).toFixed(1)} KB</span>
             </div>
             <div class="info-item">
-              <span class="label">Backup available:</span>
-              <span class="value">{storageInfo.hasBackup ? 'Yes' : 'No'}</span>
-            </div>
-            <div class="info-item">
               <span class="label">Last saved:</span>
               <span class="value">
                 {storageInfo.lastSave > 0 
@@ -101,16 +76,6 @@ export function RecoveryModal(props: RecoveryModalProps) {
               {loading() ? 'Loading...' : '📁 Load Latest Save'}
             </button>
 
-            <Show when={storageInfo.hasBackup}>
-              <button 
-                class="btn btn-secondary"
-                onClick={() => setShowBackup(!showBackup())}
-                disabled={loading()}
-              >
-                🔄 Show Backup Options
-              </button>
-            </Show>
-
             <button 
               class="btn btn-danger"
               onClick={handleDiscard}
@@ -119,20 +84,6 @@ export function RecoveryModal(props: RecoveryModalProps) {
               🗑️ Start Fresh
             </button>
           </div>
-
-          <Show when={showBackup()}>
-            <div class="backup-section">
-              <h3>Backup Recovery</h3>
-              <p>Load from a previous backup if the latest save is corrupted.</p>
-              <button 
-                class="btn btn-warning"
-                onClick={handleLoadBackup}
-                disabled={loading()}
-              >
-                🔄 Load Backup
-              </button>
-            </div>
-          </Show>
         </div>
 
         <div class="recovery-footer">

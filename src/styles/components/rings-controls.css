@@ -1,6 +1,14 @@
-/* RingsControls component styles */
+/* New Controls Layout */
+.controls-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  height: 100%;
+}
 
-.rings-section {
+.control-section-full {
+  width: 100%;
   background: rgba(30, 30, 30, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
@@ -11,12 +19,31 @@
   backdrop-filter: blur(5px);
   /* Fallback for browsers that don't support backdrop-filter */
   background: rgba(30, 30, 30, 0.95);
-  height: fit-content;
-  /* Add flexbox for horizontal layout */
-  display: flex;
-  flex-wrap: wrap;
+  /* Performance optimizations */
+  will-change: auto;
+  contain: layout style paint;
+}
+
+.rings-header {
+  margin-bottom: 20px;
+}
+
+.rings-header .section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 16px;
-  align-items: flex-start;
+  width: 100%;
 }
 
 .rings-title {
@@ -35,11 +62,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   padding: 16px;
-  margin-bottom: 0; /* Remove bottom margin since we're using gap */
   width: 100%;
-  min-width: 280px; /* Set minimum width for better layout */
-  max-width: 400px; /* Set maximum width to prevent too wide controls */
-  flex: 1 1 300px; /* Allow flex items to grow and shrink, with preferred width */
   box-sizing: border-box;
   transition: all 0.2s ease;
   /* Blur effect with fallbacks */
@@ -185,6 +208,26 @@
   width: 100%;
   box-sizing: border-box;
   flex-wrap: wrap;
+}
+
+.grammar-input-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  position: relative;
+}
+
+.updating-indicator {
+  color: #4CAF50;
+  font-size: 16px;
+  animation: spin 1s linear infinite;
+  opacity: 0.8;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .grammar-input {
@@ -378,6 +421,18 @@
   text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
 }
 
+.color-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: bold;
+  font-size: 10px;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
 /* No symbols message */
 .no-symbols {
   font-size: 12px;
@@ -392,23 +447,26 @@
 
 /* Responsive adjustments */
 @media (max-width: 767px) {
-  .rings-section {
+  .controls-layout {
+    gap: 16px;
+  }
+  
+  .control-section-full {
     padding: 16px;
-    flex-direction: column; /* Stack vertically on mobile */
+  }
+  
+  .rings-grid {
+    grid-template-columns: 1fr;
     gap: 12px;
   }
   
-  .rings-title {
+  .rings-header .section-title {
     font-size: 14px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
   
   .ring-control {
     padding: 12px;
-    margin-bottom: 0;
-    min-width: auto; /* Allow full width on mobile */
-    max-width: none;
-    flex: 1 1 auto;
   }
   
   .ring-collapsed-header {
@@ -464,31 +522,23 @@
 
 /* Tablet layout - 2 columns */
 @media (min-width: 768px) and (max-width: 1023px) {
-  .ring-control {
-    flex: 1 1 calc(50% - 8px); /* 2 columns with gap consideration */
-    min-width: 250px;
+  .rings-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
 }
 
-/* Desktop layout - 3-4 columns */
-@media (min-width: 1024px) and (max-width: 1439px) {
-  .ring-control {
-    flex: 1 1 calc(33.333% - 11px); /* 3 columns with gap consideration */
-    min-width: 280px;
-  }
-}
-
-/* Large desktop layout - 4+ columns */
-@media (min-width: 1440px) {
-  .ring-control {
-    flex: 1 1 calc(25% - 12px); /* 4 columns with gap consideration */
-    min-width: 300px;
+/* Desktop layout - 3+ columns */
+@media (min-width: 1024px) {
+  .rings-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
   }
 }
 
 /* Browser support detection and fallbacks */
 @supports not (backdrop-filter: blur(5px)) {
-  .rings-section {
+  .control-section-full {
     background: rgba(30, 30, 30, 0.95);
   }
   

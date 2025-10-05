@@ -28,8 +28,14 @@ export interface SerializedArtwork {
     randomness: number;
     strokeCount: number;
     colorBleed: number;
+    globalStrokeWidth: number;
   };
   guidesVisible: boolean;
+  backgroundColor: SerializedColor | null;
+  colorLock: {
+    lockedColors: boolean[];
+    customColors: Array<{ h: number; s: number; b: number } | null>;
+  };
 }
 
 export interface SerializedRing {
@@ -56,6 +62,7 @@ const SLOT_KEYS = [
   'wheelgen_slot_7', 'wheelgen_slot_8', 'wheelgen_slot_9'
 ];
 
+
 class SaveSlotService {
   private slots: SaveSlot[] = [];
 
@@ -66,13 +73,38 @@ class SaveSlotService {
   /**
    * Serialize p5.Color to compact format
    */
-  private serializeColor(color: p5.Color): SerializedColor {
-    const h = color._getRed ? color._getRed() : 0;   // Hue in HSB mode
-    const s = color._getGreen ? color._getGreen() : 0; // Saturation in HSB mode  
-    const b = color._getBlue ? color._getBlue() : 0;   // Brightness in HSB mode
-    const a = color._getAlpha ? color._getAlpha() : 255; // Alpha
+  private serializeColor(color: p5.Color, p: p5): SerializedColor {
+    // Store current color mode
+    const currentMode = (p as any)._colorMode;
+    const currentMaxes = (p as any)._colorMaxes;
     
-    return { h, s, b, a };
+    try {
+      // Set HSB mode for reading HSB values
+      p.colorMode(p.HSB, 360, 100, 100);
+      const h = p.hue(color);
+      const s = p.saturation(color);
+      const b = p.brightness(color);
+      const a = p.alpha(color);
+      
+      // Restore original color mode
+      if (currentMode === p.HSB) {
+        if (currentMaxes && currentMaxes.length >= 3) {
+          p.colorMode(p.HSB, currentMaxes[0], currentMaxes[1], currentMaxes[2]);
+        } else {
+          p.colorMode(p.HSB, 360, 100, 100);
+        }
+      } else {
+        if (currentMaxes && currentMaxes.length >= 3) {
+          p.colorMode(p.RGB, currentMaxes[0], currentMaxes[1], currentMaxes[2]);
+        } else {
+          p.colorMode(p.RGB, 255, 255, 255);
+        }
+      }
+      
+      return { h, s, b, a };
+    } catch (error) {
+      return { h: 0, s: 0, b: 0, a: 255 };
+    }
   }
 
   /**
@@ -85,14 +117,14 @@ class SaveSlotService {
   /**
    * Serialize Ring object to compact format
    */
-  private serializeRing(ring: Ring): SerializedRing {
+  private serializeRing(ring: Ring, p: p5): SerializedRing {
     return {
       radius: ring.radius,
       ringIndex: ring.ringIndex,
       visible: ring.visible,
       grammarString: ring.grammarString,
       isSolid: ring.isSolidRing,
-      baseColor: this.serializeColor(ring.baseColor),
+      baseColor: this.serializeColor(ring.baseColor, p),
       shapeOptions: ring.getShapeOptionsFor ? 
         Object.keys(ring.getAvailableSymbols()).reduce((acc, symbol) => {
           acc[symbol] = ring.getShapeOptionsFor(symbol);
@@ -117,15 +149,17 @@ class SaveSlotService {
   /**
    * Serialize complete artwork state
    */
-  private serializeArtwork(state: ArtworkState): SerializedArtwork {
+  private serializeArtwork(state: ArtworkState, p: p5): SerializedArtwork {
     return {
       version: '1.0',
       timestamp: Date.now(),
-      rings: state.rings.map(ring => this.serializeRing(ring)),
-      palette: state.palette.map(color => this.serializeColor(color)),
+      rings: state.rings.map(ring => this.serializeRing(ring, p)),
+      palette: state.palette.map(color => this.serializeColor(color, p)),
       innerDot: state.innerDot,
       globals: state.globals,
-      guidesVisible: state.guidesVisible
+      guidesVisible: state.guidesVisible,
+      backgroundColor: state.backgroundColor ? this.serializeColor(state.backgroundColor, p) : null,
+      colorLock: state.colorLock
     };
   }
 
@@ -138,7 +172,9 @@ class SaveSlotService {
       palette: serialized.palette.map(color => this.deserializeColor(color, p)),
       innerDot: serialized.innerDot,
       globals: serialized.globals,
-      guidesVisible: serialized.guidesVisible
+      guidesVisible: serialized.guidesVisible,
+      backgroundColor: serialized.backgroundColor ? this.deserializeColor(serialized.backgroundColor, p) : null,
+      colorLock: serialized.colorLock
     };
   }
 
@@ -153,7 +189,6 @@ class SaveSlotService {
           const slot = JSON.parse(data) as SaveSlot;
           return slot;
         } catch (error) {
-          console.error(`Failed to load slot ${index + 1}:`, error);
           return this.createEmptySlot(index + 1);
         }
       }
@@ -167,7 +202,7 @@ class SaveSlotService {
   private createEmptySlot(id: number): SaveSlot {
     return {
       id,
-      name: `Slot ${id}`,
+      name: id === 1 ? 'Autosave' : `Slot ${id}`,
       timestamp: 0,
       data: {
         version: '1.0',
@@ -186,8 +221,14 @@ class SaveSlotService {
           randomness: 0.0,
           strokeCount: 24,
           colorBleed: 0.3,
+          globalStrokeWidth: 0.0,
         },
-        guidesVisible: true
+        guidesVisible: true,
+        backgroundColor: null,
+        colorLock: {
+          lockedColors: [false, false, false, false],
+          customColors: [null, null, null, null]
+        }
       }
     };
   }
@@ -195,14 +236,14 @@ class SaveSlotService {
   /**
    * Save artwork to slot
    */
-  public saveToSlot(slotId: number, state: ArtworkState, thumbnail?: string): boolean {
+  public saveToSlot(slotId: number, state: ArtworkState, p: p5, thumbnail?: string): boolean {
     if (slotId < 1 || slotId > 9) return false;
 
     try {
-      const serialized = this.serializeArtwork(state);
+      const serialized = this.serializeArtwork(state, p);
       const slot: SaveSlot = {
         id: slotId,
-        name: `Slot ${slotId}`,
+        name: slotId === 1 ? 'Autosave' : `Slot ${slotId}`,
         timestamp: Date.now(),
         thumbnail,
         data: serialized
@@ -214,10 +255,8 @@ class SaveSlotService {
       // Update in-memory cache
       this.slots[slotId - 1] = slot;
       
-      console.log(`💾 Saved to slot ${slotId}`);
       return true;
     } catch (error) {
-      console.error(`Failed to save to slot ${slotId}:`, error);
       return false;
     }
   }
@@ -234,7 +273,6 @@ class SaveSlotService {
     try {
       return this.deserializeArtwork(slot.data, p);
     } catch (error) {
-      console.error(`Failed to load from slot ${slotId}:`, error);
       return null;
     }
   }
@@ -273,7 +311,6 @@ class SaveSlotService {
     localStorage.removeItem(key);
     this.slots[slotId - 1] = this.createEmptySlot(slotId);
     
-    console.log(`🗑️ Cleared slot ${slotId}`);
     return true;
   }
 
@@ -296,10 +333,10 @@ class SaveSlotService {
       
       return thumbnailCanvas.toDataURL('image/png');
     } catch (error) {
-      console.error('Failed to generate thumbnail:', error);
       return '';
     }
   }
+
 }
 
 // Export singleton instance

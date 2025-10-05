@@ -1,13 +1,9 @@
 /* ActionsControls component styles */
 
-/* Note: ActionsControls now uses the .ring-control class from rings-controls.css */
-
-/* Header styling for ActionsControls within rings section */
-.ring-control:has(.section-title) {
+/* ActionsControls now uses full-width layout */
+.control-section-full:has(.section-title) {
   background: rgba(25, 25, 25, 0.9);
   border: 2px solid rgba(255, 255, 255, 0.15);
-  margin-bottom: 20px;
-  order: -1; /* Ensure it appears first */
 }
 
 .section-title {
@@ -181,6 +177,17 @@
 .control-range::-webkit-slider-thumb:hover {
   background: #aaa;
   transform: scale(1.2);
+}
+
+.control-description {
+  margin-top: 4px;
+  text-align: center;
+}
+
+.control-description small {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  font-style: italic;
 }
 
 /* Guides checkbox */

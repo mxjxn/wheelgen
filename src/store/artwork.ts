@@ -1,8 +1,9 @@
 import { createSignal, createMemo, createEffect } from 'solid-js';
 import type p5 from 'p5';
 import { Ring } from '../model/ring';
-import { generatePalette } from '../core/color';
+import { generatePalette, logPaletteColors } from '../core/color';
 import { defaultGrammars } from '../core/constants';
+import { clearLoggedGrammars, logRingStrokeData } from '../model/particle';
 import { autosaveService } from './autosave';
 
 // Types
@@ -10,6 +11,7 @@ export interface GlobalsState {
   randomness: number;
   strokeCount: number;
   colorBleed: number;
+  globalStrokeWidth: number;
 }
 
 export interface InnerDotState {
@@ -21,6 +23,23 @@ export interface InnerDotState {
   maxRadius: number;
 }
 
+export interface ColorAssignmentState {
+  mode: 'auto' | 'manual';
+  strokeOffsets: {
+    d: number;
+    h: number;
+    l: number;
+    v: number;
+    '-': number;
+  };
+  customAssignments: Record<string, Record<string, number>>; // ringIndex -> strokeType -> colorIndex
+}
+
+export interface ColorLockState {
+  lockedColors: boolean[]; // Array indicating which colors are locked (true) or unlocked (false)
+  customColors: Array<{ h: number; s: number; b: number } | null>; // Custom color values for locked positions
+}
+
 export interface ArtworkState {
   rings: Ring[];
   palette: p5.Color[];
@@ -28,10 +47,17 @@ export interface ArtworkState {
   globals: GlobalsState;
   guidesVisible: boolean;
   hasChanges: boolean;
+  backgroundColor: p5.Color | null;
+  colorLock: ColorLockState;
 }
 
 // Solid.js Signals
-export const [rings, setRings] = createSignal<Ring[]>([]);
+export const [rings, setRingsOriginal] = createSignal<Ring[]>([]);
+
+// Add debugging to track ring changes
+export const setRings = (newRings: Ring[]) => {
+  setRingsOriginal(newRings);
+};
 export const [palette, setPalette] = createSignal<p5.Color[]>([]);
 export const [innerDot, setInnerDot] = createSignal<InnerDotState>({
   visible: false,
@@ -45,9 +71,27 @@ export const [globals, setGlobals] = createSignal<GlobalsState>({
   randomness: 0.0,
   strokeCount: 24,
   colorBleed: 0.3,
+  globalStrokeWidth: 0.0,
 });
 export const [guidesVisible, setGuidesVisible] = createSignal(true);
 export const [hasChanges, setHasChanges] = createSignal(false);
+export const [backgroundColor, setBackgroundColor] = createSignal<p5.Color | null>(null);
+export const [colorAssignment, setColorAssignment] = createSignal<ColorAssignmentState>({
+  mode: 'auto',
+  strokeOffsets: {
+    d: 0,
+    h: 0,
+    l: 0,
+    v: 0,
+    '-': 0,
+  },
+  customAssignments: {},
+});
+
+export const [colorLock, setColorLock] = createSignal<ColorLockState>({
+  lockedColors: [false, false, false, false], // Initially all colors unlocked
+  customColors: [null, null, null, null], // No custom colors initially
+});
 
 // Computed values
 export const availableRings = createMemo(() => 
@@ -64,7 +108,7 @@ export const updateRing = (index: number, updates: Partial<Ring>) => {
   const updatedRings = [...currentRings];
   // Apply updates directly to the ring object instead of spreading
   Object.assign(updatedRings[index], updates);
-  setRings(updatedRings);
+  setRingsOriginal(updatedRings);
   setHasChanges(true);
 };
 
@@ -81,7 +125,7 @@ export const updateRingPattern = (index: number, pattern: string, p: p5) => {
   }
   
   // Force a new array reference to ensure reactivity
-  setRings([...currentRings]);
+  setRingsOriginal([...currentRings]);
   setHasChanges(true);
 };
 
@@ -111,8 +155,8 @@ export const updatePaletteAndRings = (newPalette: p5.Color[], p: p5) => {
   currentRings.forEach((ring, i) => 
     ring.updateColor(newPalette[i % newPalette.length] as p5.Color, p)
   );
-  // Force a new array reference to ensure reactivity
-  setRings([...currentRings]);
+  // Don't create a new array reference - just mark changes to trigger render
+  // The ring objects themselves have been updated, so we just need to trigger a redraw
   setHasChanges(true);
 };
 
@@ -122,6 +166,139 @@ export const toggleGuides = () => {
 
 export const markChanges = () => {
   setHasChanges(true);
+};
+
+export const updateBackgroundColor = (h: number, s: number, b: number, p: p5) => {
+  p.colorMode(p.HSB, 360, 100, 100);
+  const color = p.color(h, s, b);
+  setBackgroundColor(color);
+  setHasChanges(true);
+};
+
+// Color assignment functions
+// Simplified color assignment - just use palette colors directly
+export const getStrokeColorIndex = (ringIndex: number, strokeType: 'd' | 'h' | 'l' | 'v' | '-'): number => {
+  const assignment = colorAssignment();
+  
+  // Check if there's a custom assignment for this specific ring/stroke
+  const custom = assignment.customAssignments[ringIndex.toString()]?.[strokeType];
+  if (custom !== undefined) {
+    return custom;
+  }
+  
+  // Default: use ring index % palette length (simple)
+  const defaultIndex = ringIndex % 4;
+  return defaultIndex;
+};
+
+export const setStrokeColorAssignment = (ringIndex: number, strokeType: 'd' | 'h' | 'l' | 'v' | '-', colorIndex: number) => {
+  
+  const current = colorAssignment();
+  const newCustomAssignments = { ...current.customAssignments };
+  
+  if (!newCustomAssignments[ringIndex.toString()]) {
+    newCustomAssignments[ringIndex.toString()] = {};
+  }
+  
+  newCustomAssignments[ringIndex.toString()][strokeType] = colorIndex;
+  
+  // Update assignments (no mode switching)
+  setColorAssignment({
+    ...current,
+    customAssignments: newCustomAssignments,
+  });
+  
+  // Update the ring's stroke colors and update particles
+  const currentRings = rings();
+  const ring = currentRings[ringIndex];
+  if (ring) {
+    if (!ring.strokeColors) {
+      ring.strokeColors = {};
+    }
+    ring.strokeColors[strokeType] = colorIndex;
+    
+    
+    // Update all particles for this stroke type to reflect the new color
+    if (p5Instance) {
+      ring.updateParticlesForStrokeType(strokeType, p5Instance);
+    }
+    
+    // Force a new array reference to ensure reactivity
+    setRingsOriginal([...currentRings]);
+  }
+  
+  setHasChanges(true);
+};
+
+export const clearStrokeColorAssignment = (ringIndex: number, strokeType: 'd' | 'h' | 'l' | 'v' | '-') => {
+  const current = colorAssignment();
+  const newCustomAssignments = { ...current.customAssignments };
+  
+  if (newCustomAssignments[ringIndex.toString()]) {
+    delete newCustomAssignments[ringIndex.toString()][strokeType];
+    if (Object.keys(newCustomAssignments[ringIndex.toString()]).length === 0) {
+      delete newCustomAssignments[ringIndex.toString()];
+    }
+  }
+  
+  // Check if we should switch back to auto mode
+  const hasAnyCustomAssignments = Object.keys(newCustomAssignments).length > 0;
+  const newMode = hasAnyCustomAssignments ? 'manual' : 'auto';
+  
+  setColorAssignment({
+    ...current,
+    mode: newMode,
+    customAssignments: newCustomAssignments,
+  });
+  
+  // Update the ring's stroke colors and update particles
+  const currentRings = rings();
+  const ring = currentRings[ringIndex];
+  if (ring && ring.strokeColors) {
+    delete ring.strokeColors[strokeType];
+    // Force a new array reference to ensure reactivity
+    setRingsOriginal([...currentRings]);
+  }
+  
+  setHasChanges(true);
+};
+
+export const setColorAssignmentMode = (mode: 'auto' | 'manual') => {
+  setColorAssignment(prev => ({ ...prev, mode }));
+  setHasChanges(true);
+};
+
+// Color lock management functions
+export const toggleColorLock = (index: number) => {
+  const current = colorLock();
+  const newLockedColors = [...current.lockedColors];
+  newLockedColors[index] = !newLockedColors[index];
+  
+  setColorLock({
+    ...current,
+    lockedColors: newLockedColors,
+  });
+  setHasChanges(true);
+};
+
+export const setCustomColor = (index: number, color: { h: number; s: number; b: number } | null) => {
+  const current = colorLock();
+  const newCustomColors = [...current.customColors];
+  newCustomColors[index] = color;
+  
+  setColorLock({
+    ...current,
+    customColors: newCustomColors,
+  });
+  setHasChanges(true);
+};
+
+export const isColorLocked = (index: number): boolean => {
+  return colorLock().lockedColors[index] || false;
+};
+
+export const getCustomColor = (index: number): { h: number; s: number; b: number } | null => {
+  return colorLock().customColors[index] || null;
 };
 
 export const clearChanges = () => {
@@ -136,6 +313,10 @@ export const setP5Instance = (p: p5) => {
   p5Instance = p;
 };
 
+export const getP5Instance = (): p5 | null => {
+  return p5Instance;
+};
+
 // Get current artwork state for autosave
 const getCurrentArtworkState = (): ArtworkState => ({
   rings: rings(),
@@ -143,7 +324,9 @@ const getCurrentArtworkState = (): ArtworkState => ({
   innerDot: innerDot(),
   globals: globals(),
   guidesVisible: guidesVisible(),
-  hasChanges: hasChanges()
+  hasChanges: hasChanges(),
+  backgroundColor: backgroundColor() || null,
+  colorLock: colorLock(),
 });
 
 // Autosave effect - triggers when hasChanges becomes true
@@ -159,41 +342,35 @@ export const loadFromAutosave = (p: p5): boolean => {
   if (!savedState) return false;
 
   try {
-    if (savedState.rings) setRings(savedState.rings);
+    // Set palette and other state FIRST so rings can access it when they're loaded
     if (savedState.palette) setPalette(savedState.palette);
-    if (savedState.innerDot) setInnerDot(savedState.innerDot);
+    if (savedState.backgroundColor) setBackgroundColor(savedState.backgroundColor);
+    if (savedState.colorLock) setColorLock(savedState.colorLock);
     if (savedState.globals) setGlobals(savedState.globals);
     if (savedState.guidesVisible !== undefined) setGuidesVisible(savedState.guidesVisible);
+    
+    // Set rings AFTER palette is available
+    if (savedState.rings) setRingsOriginal(savedState.rings);
+    if (savedState.innerDot) setInnerDot(savedState.innerDot);
+    
+    // Update particles to use the new palette
+    if (savedState.rings) {
+      const currentRings = rings();
+      currentRings.forEach(ring => {
+        if (!ring.isSolidRing) {
+          ring.updateParticles(p);
+        }
+      });
+    }
     
     setHasChanges(false);
     autosaveService.clearRecoveryFlag();
     return true;
   } catch (error) {
-    console.error('Failed to load from autosave:', error);
     return false;
   }
 };
 
-// Load from backup
-export const loadFromBackup = (p: p5): boolean => {
-  const savedState = autosaveService.loadFromBackup(p);
-  if (!savedState) return false;
-
-  try {
-    if (savedState.rings) setRings(savedState.rings);
-    if (savedState.palette) setPalette(savedState.palette);
-    if (savedState.innerDot) setInnerDot(savedState.innerDot);
-    if (savedState.globals) setGlobals(savedState.globals);
-    if (savedState.guidesVisible !== undefined) setGuidesVisible(savedState.guidesVisible);
-    
-    setHasChanges(false);
-    autosaveService.clearRecoveryFlag();
-    return true;
-  } catch (error) {
-    console.error('Failed to load from backup:', error);
-    return false;
-  }
-};
 
 // Check for recovery data
 export const hasRecoveryData = () => autosaveService.hasRecoveryData();
@@ -218,6 +395,9 @@ export const initializeArtwork = (p: p5) => {
   // Set p5 instance for autosave
   setP5Instance(p);
   
+  // Clear logged grammars for fresh color tracing
+  clearLoggedGrammars();
+  
   const numRings = 10;
   const maxRadius = Math.min(p.width, p.height) / 2 * 0.85;
   const minRadius = 50;
@@ -226,13 +406,24 @@ export const initializeArtwork = (p: p5) => {
   p.colorMode(p.HSB, 360, 100, 100);
   const newPalette = generatePalette(p);
   setPalette(newPalette);
+  
+  // Log the generated palette colors
+  logPaletteColors(p, newPalette);
 
   const newRings: Ring[] = [];
   for (let i = 0; i < numRings; i++) {
     const r = p.map(i, 0, numRings - 1, minRadius, maxRadius);
     const c = newPalette[i % newPalette.length] as p5.Color;
     const ring = new Ring(r, c, i);
-    
+    newRings.push(ring);
+  }
+
+  // Set rings BEFORE calling setPattern so particles can access them
+  setRingsOriginal(newRings);
+
+  // Now set patterns (which creates particles)
+  for (let i = 0; i < numRings; i++) {
+    const ring = newRings[i];
     // Initialize 3 smallest rings invisible
     if (i < 3) {
       ring.visible = false;
@@ -244,10 +435,7 @@ export const initializeArtwork = (p: p5) => {
       ring.setPattern(p, grammar);
       ring.visible = true;
     }
-    newRings.push(ring);
   }
-
-  setRings(newRings);
 
   const innermostRing = newRings[newRings.length - 1];
   setInnerDot({
@@ -262,5 +450,6 @@ export const initializeArtwork = (p: p5) => {
 
 // Randomize function
 export const randomizeArtwork = (p: p5) => {
+  clearLoggedGrammars(); // Clear any existing logged data
   initializeArtwork(p);
 };

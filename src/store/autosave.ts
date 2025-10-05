@@ -1,6 +1,7 @@
 import type p5 from 'p5';
-import { ArtworkState } from './artwork';
+import { ArtworkState, getP5Instance } from './artwork';
 import { Ring } from '../model/ring';
+import { saveSlotService } from './saveSlots';
 
 // Efficient serialization format for artwork state
 export interface SerializedArtwork {
@@ -43,13 +44,10 @@ export interface SerializedColor {
 
 // Storage keys
 const STORAGE_KEY = 'wheelgen_autosave';
-const BACKUP_KEY = 'wheelgen_backup';
 const RECOVERY_KEY = 'wheelgen_recovery';
 
 // Configuration
 const AUTOSAVE_DELAY = 2000; // 2 seconds
-const MAX_STORAGE_SIZE = 1024 * 1024; // 1MB limit
-const BACKUP_FREQUENCY = 5; // Backup every 5 saves
 
 class AutosaveService {
   private saveTimeout: number | null = null;
@@ -192,68 +190,46 @@ class AutosaveService {
   }
 
   /**
-   * Save artwork state to localStorage
+   * Save artwork state to autosave slot (slot 1)
    */
   private saveToStorage(state: ArtworkState): boolean {
     try {
-      const serialized = this.serializeArtwork(state);
-      const compressed = this.compress(serialized);
+      // Generate thumbnail if p5 canvas is available
+      let thumbnail = '';
+      const canvas = document.querySelector('canvas') as HTMLCanvasElement;
+      if (canvas) {
+        thumbnail = saveSlotService.generateThumbnail(canvas);
+      }
       
-      // Check size limit
-      if (compressed.length > MAX_STORAGE_SIZE) {
-        console.warn('Autosave data too large, skipping save');
+      // Save to slot 1 (autosave slot)
+      const p5Instance = getP5Instance();
+      if (!p5Instance) {
         return false;
       }
-
-      // Save to localStorage
-      localStorage.setItem(STORAGE_KEY, compressed);
+      const success = saveSlotService.saveToSlot(1, state, p5Instance, thumbnail);
       
-      // Create backup every N saves
-      this.saveCount++;
-      if (this.saveCount % BACKUP_FREQUENCY === 0) {
-        localStorage.setItem(BACKUP_KEY, compressed);
+      if (success) {
+        this.lastSaveTime = Date.now();
+        return true;
+      } else {
+        return false;
       }
-      
-      this.lastSaveTime = Date.now();
-      console.log(`Autosaved artwork (${compressed.length} bytes)`);
-      return true;
     } catch (error) {
-      console.error('Failed to save artwork:', error);
       return false;
     }
   }
 
   /**
-   * Load artwork state from localStorage
+   * Load artwork state from autosave slot (slot 1)
    */
   public loadFromStorage(p: p5): Partial<ArtworkState> | null {
     try {
-      const compressed = localStorage.getItem(STORAGE_KEY);
-      if (!compressed) return null;
-
-      const serialized = this.decompress(compressed);
-      return this.deserializeArtwork(serialized, p);
+      return saveSlotService.loadFromSlot(1, p);
     } catch (error) {
-      console.error('Failed to load artwork:', error);
       return null;
     }
   }
 
-  /**
-   * Load from backup
-   */
-  public loadFromBackup(p: p5): Partial<ArtworkState> | null {
-    try {
-      const compressed = localStorage.getItem(BACKUP_KEY);
-      if (!compressed) return null;
-
-      const serialized = this.decompress(compressed);
-      return this.deserializeArtwork(serialized, p);
-    } catch (error) {
-      console.error('Failed to load backup:', error);
-      return null;
-    }
-  }
 
   /**
    * Schedule autosave with debouncing
@@ -288,10 +264,9 @@ class AutosaveService {
    * Check for recovery data and notify user
    */
   private checkForRecovery(): void {
-    const hasAutosave = localStorage.getItem(STORAGE_KEY) !== null;
-    const hasBackup = localStorage.getItem(BACKUP_KEY) !== null;
+    const hasAutosaveData = saveSlotService.hasSlotData(1);
     
-    if (hasAutosave || hasBackup) {
+    if (hasAutosaveData) {
       // Store recovery flag for UI to check
       localStorage.setItem(RECOVERY_KEY, 'true');
     }
@@ -301,7 +276,7 @@ class AutosaveService {
    * Check if recovery data exists
    */
   public hasRecoveryData(): boolean {
-    return localStorage.getItem(RECOVERY_KEY) === 'true';
+    return saveSlotService.hasSlotData(1);
   }
 
   /**
@@ -334,7 +309,6 @@ class AutosaveService {
    */
   public clearAllData(): void {
     localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(BACKUP_KEY);
     localStorage.removeItem(RECOVERY_KEY);
     this.saveCount = 0;
     this.lastSaveTime = 0;
@@ -343,14 +317,14 @@ class AutosaveService {
   /**
    * Get storage usage info
    */
-  public getStorageInfo(): { size: number; hasBackup: boolean; lastSave: number } {
-    const autosave = localStorage.getItem(STORAGE_KEY) || '';
-    const backup = localStorage.getItem(BACKUP_KEY) || '';
+  public getStorageInfo(): { size: number; lastSave: number; autosaveSlot: number } {
+    const autosaveSlotInfo = saveSlotService.getSlotInfo(1);
+    const slotData = autosaveSlotInfo ? JSON.stringify(autosaveSlotInfo) : '';
     
     return {
-      size: autosave.length + backup.length,
-      hasBackup: backup.length > 0,
-      lastSave: this.lastSaveTime
+      size: slotData.length,
+      lastSave: this.lastSaveTime,
+      autosaveSlot: 1
     };
   }
 }

@@ -65,7 +65,15 @@ export function drawCalligraphyHook(p: p5, options: HookDrawOptions) {
       const x2 = p.bezierPoint(p1.x, c1.x, c2.x, p2.x, (j + 1) / segments);
       const y2 = p.bezierPoint(p1.y, c1.y, c2.y, p2.y, (j + 1) / segments);
       const currentAlpha = p.lerp(startAlpha, endAlpha, t);
-      p.stroke(p.red(strokeColor), p.green(strokeColor), p.blue(strokeColor), currentAlpha);
+      
+      // Properly read RGB values regardless of current color mode
+      p.colorMode(p.RGB, 255);
+      const r = Math.round(p.red(strokeColor));
+      const g = Math.round(p.green(strokeColor));
+      const b = Math.round(p.blue(strokeColor));
+      p.colorMode(p.HSB, 360, 100, 100); // Restore HSB mode
+      
+      p.stroke(r, g, b, currentAlpha);
       p.line(x1, y1, x2, y2);
     }
   }

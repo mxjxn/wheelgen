@@ -1,0 +1,234 @@
+/* Status Chips Styles */
+.status-chips {
+  position: fixed;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 11px;
+  transition: all 0.2s ease;
+}
+
+.status-chips.top-left {
+  top: 20px;
+  left: 20px;
+}
+
+.status-chips.top-right {
+  top: 20px;
+  right: 20px;
+  z-index: 1000; /* Ensure they're above canvas but below toggle buttons */
+  pointer-events: none; /* Allow clicks to pass through to canvas */
+}
+
+.status-chips.top-right .status-chip {
+  pointer-events: auto; /* Re-enable pointer events for individual chips */
+}
+
+.status-chips.bottom-left {
+  bottom: 20px;
+  left: 20px;
+}
+
+.status-chips.bottom-right {
+  bottom: 20px;
+  right: 20px;
+}
+
+/* Individual Status Chip */
+.status-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #fff;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+  min-width: 80px;
+  position: relative;
+}
+
+.status-chip:hover {
+  background: rgba(30, 30, 30, 0.95);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Chip Elements */
+.chip-icon {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.chip-text {
+  font-weight: 600;
+  font-size: 11px;
+  flex-grow: 1;
+  white-space: nowrap;
+}
+
+.chip-time {
+  font-size: 9px;
+  color: #aaa;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.chip-warning {
+  font-size: 10px;
+  color: #ef4444;
+  margin-left: 4px;
+}
+
+/* Spinner Animation */
+.chip-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 4px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Chip Type Variations */
+.save-chip {
+  /* Save-specific styling */
+}
+
+.render-chip {
+  /* Render-specific styling */
+}
+
+.perf-chip {
+  /* Performance-specific styling */
+}
+
+/* Status Colors */
+.status-chip[style*="border-color: #4ade80"] {
+  border-color: #4ade80 !important;
+}
+
+.status-chip[style*="border-color: #f59e0b"] {
+  border-color: #f59e0b !important;
+}
+
+.status-chip[style*="border-color: #ef4444"] {
+  border-color: #ef4444 !important;
+}
+
+.status-chip[style*="border-color: #3b82f6"] {
+  border-color: #3b82f6 !important;
+}
+
+.status-chip[style*="border-color: #6b7280"] {
+  border-color: #6b7280 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .status-chips {
+    gap: 4px;
+    font-size: 10px;
+  }
+  
+  .status-chips.top-left,
+  .status-chips.top-right {
+    top: 10px;
+  }
+  
+  .status-chips.bottom-left,
+  .status-chips.bottom-right {
+    bottom: 10px;
+  }
+  
+  .status-chip {
+    padding: 3px 6px;
+    min-width: 70px;
+  }
+  
+  .chip-icon {
+    font-size: 11px;
+    width: 14px;
+    height: 14px;
+  }
+  
+  .chip-text {
+    font-size: 10px;
+  }
+  
+  .chip-time {
+    font-size: 8px;
+  }
+}
+
+/* Compact Mode */
+.status-chips.compact {
+  gap: 3px;
+}
+
+.status-chips.compact .status-chip {
+  padding: 2px 6px;
+  min-width: 60px;
+}
+
+.status-chips.compact .chip-text {
+  font-size: 10px;
+}
+
+.status-chips.compact .chip-time {
+  display: none;
+}
+
+/* Hover Effects */
+.status-chip:hover .chip-text {
+  color: #fff;
+}
+
+.status-chip:hover .chip-time {
+  color: #ccc;
+}
+
+/* Animation for status changes */
+.status-chip {
+  animation: statusChange 0.3s ease-out;
+}
+
+@keyframes statusChange {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Special states */
+.status-chip.saving {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.status-chip.rendering {
+  animation: glow 1s infinite alternate;
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+  100% { box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3); }
+}

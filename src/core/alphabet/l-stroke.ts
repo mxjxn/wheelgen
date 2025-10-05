@@ -64,7 +64,15 @@ export function drawCalligraphyLStroke(p: p5, options: LStrokeDrawOptions) {
       const y2 = p.lerp(p1.y, p2.y, (j + 1) / segments);
       const totalT = (t * len1) / totalLength;
       const currentAlpha = p.lerp(startAlpha, endAlpha, totalT);
-      p.stroke(p.red(strokeColor), p.green(strokeColor), p.blue(strokeColor), currentAlpha);
+      
+      // Properly read RGB values regardless of current color mode
+      p.colorMode(p.RGB, 255);
+      const r = Math.round(p.red(strokeColor));
+      const g = Math.round(p.green(strokeColor));
+      const b = Math.round(p.blue(strokeColor));
+      p.colorMode(p.HSB, 360, 100, 100); // Restore HSB mode
+      
+      p.stroke(r, g, b, currentAlpha);
       p.line(x1, y1, x2, y2);
     }
 
@@ -80,7 +88,15 @@ export function drawCalligraphyLStroke(p: p5, options: LStrokeDrawOptions) {
       const y2 = p.lerp(stem_p1.y, stem_p2.y, (j + 1) / segments);
       const totalT = (len1 + t * len2) / totalLength;
       const currentAlpha = p.lerp(startAlpha, endAlpha, totalT);
-      p.stroke(p.red(strokeColor), p.green(strokeColor), p.blue(strokeColor), currentAlpha);
+      
+      // Properly read RGB values regardless of current color mode
+      p.colorMode(p.RGB, 255);
+      const r = Math.round(p.red(strokeColor));
+      const g = Math.round(p.green(strokeColor));
+      const b = Math.round(p.blue(strokeColor));
+      p.colorMode(p.HSB, 360, 100, 100); // Restore HSB mode
+      
+      p.stroke(r, g, b, currentAlpha);
       p.line(x1, y1, x2, y2);
     }
   }

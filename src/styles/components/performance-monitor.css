@@ -1,0 +1,225 @@
+/* Performance Monitor Styles */
+.performance-monitor {
+  position: fixed;
+  z-index: 1000;
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 11px;
+  color: #fff;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  min-width: 120px;
+  transition: all 0.2s ease;
+}
+
+.performance-monitor.top-left {
+  top: 20px;
+  left: 20px;
+}
+
+.performance-monitor.top-right {
+  top: 20px;
+  right: 20px;
+}
+
+.performance-monitor.bottom-left {
+  bottom: 20px;
+  left: 20px;
+}
+
+.performance-monitor.bottom-right {
+  bottom: 20px;
+  right: 20px;
+}
+
+.performance-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.status-indicator {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.status-indicator.rendering {
+  background: #3b82f6;
+  animation: pulse 1s infinite;
+}
+
+.status-indicator.has-queue {
+  background: #f59e0b;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.status-text {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.render-time {
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.queue-count {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.performance-details {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 6px;
+  margin-top: 6px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.metric-label {
+  color: #aaa;
+  font-size: 10px;
+}
+
+.metric-value {
+  font-weight: 600;
+  font-size: 10px;
+}
+
+.toggle-details,
+.toggle-visibility {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-radius: 3px;
+  font-size: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.toggle-details:hover,
+.toggle-visibility:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.toggle-visibility {
+  top: 22px;
+}
+
+/* Mini Performance Indicator */
+.mini-performance-indicator {
+  position: fixed;
+  z-index: 1000;
+  background: rgba(20, 20, 20, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 10px;
+  color: #fff;
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.mini-performance-indicator.top-left {
+  top: 20px;
+  left: 20px;
+}
+
+.mini-performance-indicator.top-right {
+  top: 20px;
+  right: 20px;
+}
+
+.mini-performance-indicator.bottom-left {
+  bottom: 20px;
+  left: 20px;
+}
+
+.mini-performance-indicator.bottom-right {
+  bottom: 20px;
+  right: 20px;
+}
+
+.indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.render-time {
+  font-weight: 600;
+  font-size: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .performance-monitor {
+    font-size: 10px;
+    padding: 6px 8px;
+    min-width: 100px;
+  }
+  
+  .performance-monitor.top-left,
+  .performance-monitor.top-right {
+    top: 10px;
+  }
+  
+  .performance-monitor.bottom-left,
+  .performance-monitor.bottom-right {
+    bottom: 10px;
+  }
+  
+  .mini-performance-indicator {
+    font-size: 9px;
+    padding: 3px 6px;
+  }
+  
+  .mini-performance-indicator.top-left,
+  .mini-performance-indicator.top-right {
+    top: 10px;
+  }
+  
+  .mini-performance-indicator.bottom-left,
+  .mini-performance-indicator.bottom-right {
+    bottom: 10px;
+  }
+}
