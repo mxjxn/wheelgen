@@ -1,6 +1,6 @@
 import type p5 from 'p5';
 import { DrawShapeFn } from './types';
-import { globals, palette } from '../store/artwork';
+import { globals, palette, rings } from '../store/artwork';
 
 const DIVISIONS = 64;
 
@@ -11,6 +11,7 @@ export class Particle {
   public isRotated: boolean;
   public baseColor: p5.Color;
   public ringIndex: number;
+  public strokeType?: string;
 
   private geometry: { w: number; h: number };
   private shapeOptions: Record<string, { min: number; max: number; value: number }>;
@@ -28,6 +29,7 @@ export class Particle {
     isRotated = false,
     ringIndex = 0,
     p: p5,
+    strokeType?: string,
   ) {
     this.radius = radius;
     this.angle = angle;
@@ -36,6 +38,7 @@ export class Particle {
     this.baseColor = baseColor;
     this.ringIndex = ringIndex;
     this.shapeOptions = shapeOptions;
+    this.strokeType = strokeType;
 
     const theta = (Math.PI * 2) / DIVISIONS;
     const diagonal = this.radius * Math.sqrt(2 * (1 - Math.cos(theta)));
@@ -56,6 +59,20 @@ export class Particle {
     this.saturations = [];
     this.colors = [];
 
+    // Get stroke-specific color if assigned, otherwise use ring's base color
+    let strokeBaseColor = this.baseColor;
+    if (this.strokeType) {
+      // Get the ring to access stroke color assignments
+      const currentRings = rings();
+      const ring = currentRings[this.ringIndex];
+      if (ring && ring.strokeColors && ring.strokeColors[this.strokeType] !== undefined) {
+        const colorIndex = ring.strokeColors[this.strokeType];
+        if (colorIndex >= 0 && colorIndex < currentPalette.length) {
+          strokeBaseColor = currentPalette[colorIndex];
+        }
+      }
+    }
+
     const currentPaletteIndex = this.ringIndex % currentPalette.length;
     const adjacentPaletteIndex = (currentPaletteIndex + 1) % currentPalette.length;
     const adjacentColor = currentPalette[adjacentPaletteIndex];
@@ -64,7 +81,7 @@ export class Particle {
       this.offsets.push(p.map(i, 0, numLinesInNib - 1, -penWidth / 2, penWidth / 2));
 
       const bleedT = p.map(i, 0, numLinesInNib - 1, currentGlobals.colorBleed, 0);
-      const strokeColor = p.lerpColor(adjacentColor, this.baseColor, bleedT) as p5.Color;
+      const strokeColor = p.lerpColor(adjacentColor, strokeBaseColor, bleedT) as p5.Color;
       this.colors.push(strokeColor);
 
       const startAlpha = 191;

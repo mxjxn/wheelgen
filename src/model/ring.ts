@@ -16,6 +16,7 @@ export class Ring {
   private _pattern: { char: 'd' | 'h' | 'l' | 'v' | 'x'; rotated: boolean }[] = [];
   private shapeOptions: Record<string, Record<string, { min: number; max: number; value: number }>> = {};
   private particles: Particle[] = [];
+  public strokeColors: Record<string, number> = {}; // stroke type -> palette color index
 
   constructor(radius: number, baseColor: p5.Color, ringIndex: number) {
     this.radius = radius;
@@ -157,8 +158,18 @@ export class Ring {
       if (!drawFunc) continue;
       const angle = (i / divisions) * Math.PI * 2;
       this.particles.push(
-        new Particle(this.radius, angle, drawFunc, this.baseColor, this.shapeOptions[symbolData.char], symbolData.rotated, this.ringIndex, p),
+        new Particle(this.radius, angle, drawFunc, this.baseColor, this.shapeOptions[symbolData.char], symbolData.rotated, this.ringIndex, p, symbolData.char),
       );
     }
+  }
+
+  // Get color for a specific stroke type
+  getStrokeColor(strokeType: string, palette: p5.Color[], p: p5): p5.Color {
+    const colorIndex = this.strokeColors[strokeType];
+    if (colorIndex !== undefined && colorIndex >= 0 && colorIndex < palette.length) {
+      return palette[colorIndex];
+    }
+    // Default to ring's base color if no specific color assigned
+    return this.baseColor;
   }
 }

@@ -320,6 +320,64 @@
   border-color: rgba(255, 255, 255, 0.4);
 }
 
+/* Stroke Color Controls */
+.stroke-color-control {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stroke-color-label {
+  display: block;
+  font-size: 11px;
+  color: #aaa;
+  margin-bottom: 8px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+.stroke-color-swatches {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.stroke-color-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.stroke-color-swatch:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: scale(1.1);
+}
+
+.stroke-color-swatch.selected {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3);
+  transform: scale(1.15);
+}
+
+.stroke-color-swatch.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: bold;
+  font-size: 10px;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+}
+
 /* No symbols message */
 .no-symbols {
   font-size: 12px;

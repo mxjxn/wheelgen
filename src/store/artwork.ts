@@ -99,6 +99,11 @@ export const updateInnerDot = (updates: Partial<InnerDotState>) => {
 
 export const setNewPalette = (p: p5) => {
   const newPalette = generatePalette(p);
+  updatePaletteAndRings(newPalette, p);
+};
+
+// Unified function to update both palette and ring colors
+export const updatePaletteAndRings = (newPalette: p5.Color[], p: p5) => {
   setPalette(newPalette);
   
   // Update ring colors
