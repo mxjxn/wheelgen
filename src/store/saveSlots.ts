@@ -49,10 +49,15 @@ export interface SerializedRing {
 }
 
 export interface SerializedColor {
-  h: number;
-  s: number;
-  b: number;
-  a: number;
+  // RGB format (new, preferred)
+  r?: number;
+  g?: number;
+  b?: number;
+  a?: number;
+  // HSB format (legacy, for backward compatibility)
+  h?: number;
+  s?: number;
+  // Note: 'b' and 'a' are shared between formats
 }
 
 // Storage keys for each slot
@@ -72,6 +77,7 @@ class SaveSlotService {
 
   /**
    * Serialize p5.Color to compact format
+   * FIXED: Store RGB values to avoid HSB round-trip precision loss
    */
   private serializeColor(color: p5.Color, p: p5): SerializedColor {
     // Store current color mode
@@ -79,11 +85,11 @@ class SaveSlotService {
     const currentMaxes = (p as any)._colorMaxes;
     
     try {
-      // Set HSB mode for reading HSB values
-      p.colorMode(p.HSB, 360, 100, 100);
-      const h = p.hue(color);
-      const s = p.saturation(color);
-      const b = p.brightness(color);
+      // Read RGB values directly to avoid conversion loss
+      p.colorMode(p.RGB, 255);
+      const r = p.red(color);
+      const g = p.green(color);
+      const b = p.blue(color);
       const a = p.alpha(color);
       
       // Restore original color mode
@@ -101,17 +107,60 @@ class SaveSlotService {
         }
       }
       
-      return { h, s, b, a };
+      // Store RGB values instead of HSB to avoid precision loss
+      return { r, g, b, a };
     } catch (error) {
-      return { h: 0, s: 0, b: 0, a: 255 };
+      return { r: 0, g: 0, b: 0, a: 255 };
     }
   }
 
   /**
    * Deserialize color back to p5.Color
+   * FIXED: Use RGB values to avoid HSB round-trip precision loss
    */
   private deserializeColor(serialized: SerializedColor, p: p5): p5.Color {
-    return p.color(serialized.h, serialized.s, serialized.b, serialized.a);
+    // Store current color mode
+    const currentMode = (p as any)._colorMode;
+    const currentMaxes = (p as any)._colorMaxes;
+    
+    try {
+      // Create color directly from RGB values to avoid any conversion loss
+      p.colorMode(p.RGB, 255);
+      const color = p.color(
+        serialized.r ?? 0, 
+        serialized.g ?? 0, 
+        serialized.b ?? 0, 
+        serialized.a ?? 255
+      );
+      
+      // Restore original color mode
+      if (currentMode === p.HSB) {
+        if (currentMaxes && currentMaxes.length >= 3) {
+          p.colorMode(p.HSB, currentMaxes[0], currentMaxes[1], currentMaxes[2]);
+        } else {
+          p.colorMode(p.HSB, 360, 100, 100);
+        }
+      } else {
+        if (currentMaxes && currentMaxes.length >= 3) {
+          p.colorMode(p.RGB, currentMaxes[0], currentMaxes[1], currentMaxes[2]);
+        } else {
+          p.colorMode(p.RGB, 255, 255, 255);
+        }
+      }
+      
+      return color;
+    } catch (error) {
+      // Fallback: try to handle legacy HSB format
+      if ('h' in serialized && 's' in serialized && 'b' in serialized) {
+        return p.color(
+          serialized.h ?? 0, 
+          serialized.s ?? 0, 
+          serialized.b ?? 0, 
+          serialized.a ?? 255
+        );
+      }
+      return p.color(0, 0, 0, 255);
+    }
   }
 
   /**

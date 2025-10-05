@@ -1,6 +1,95 @@
 import type p5 from 'p5';
 
 export function generatePalette(p: p5): p5.Color[] {
+  // Use direct RGB generation to avoid HSB conversion issues
+  return generateDirectRgbPalette(p);
+}
+
+/**
+ * Generate palette using direct RGB values to avoid conversion precision loss
+ */
+export function generateDirectRgbPalette(p: p5): p5.Color[] {
+  const palette: p5.Color[] = [];
+  
+  // Store current color mode
+  const currentMode = (p as any)._colorMode;
+  const currentMaxes = (p as any)._colorMaxes;
+  
+  try {
+    // Generate random but harmonious RGB colors
+    const baseHue = Math.random() * 360;
+    
+    for (let i = 0; i < 4; i++) {
+      // Create colors with good saturation and brightness
+      const hue = (baseHue + i * 90) % 360;
+      const saturation = 0.7 + Math.random() * 0.3; // 70-100% saturation
+      const brightness = 0.8 + Math.random() * 0.2; // 80-100% brightness
+      
+      // Convert HSB to RGB manually to avoid p5 conversion issues
+      const rgb = hsbToRgbManual(hue, saturation, brightness);
+      
+      // Create color in RGB mode
+      p.colorMode(p.RGB, 255);
+      palette.push(p.color(rgb.r, rgb.g, rgb.b));
+    }
+    
+    // Restore original color mode
+    if (currentMode === p.HSB) {
+      if (currentMaxes && currentMaxes.length >= 3) {
+        p.colorMode(p.HSB, currentMaxes[0], currentMaxes[1], currentMaxes[2]);
+      } else {
+        p.colorMode(p.HSB, 360, 100, 100);
+      }
+    } else {
+      if (currentMaxes && currentMaxes.length >= 3) {
+        p.colorMode(p.RGB, currentMaxes[0], currentMaxes[1], currentMaxes[2]);
+      } else {
+        p.colorMode(p.RGB, 255, 255, 255);
+      }
+    }
+    
+    return palette;
+  } catch (error) {
+    // Fallback to original method if something goes wrong
+    return generateLegacyPalette(p);
+  }
+}
+
+/**
+ * Convert HSB to RGB manually to avoid p5 conversion precision issues
+ */
+function hsbToRgbManual(h: number, s: number, v: number): { r: number; g: number; b: number } {
+  const c = v * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = v - c;
+  
+  let r = 0, g = 0, b = 0;
+  
+  if (h >= 0 && h < 60) {
+    r = c; g = x; b = 0;
+  } else if (h >= 60 && h < 120) {
+    r = x; g = c; b = 0;
+  } else if (h >= 120 && h < 180) {
+    r = 0; g = c; b = x;
+  } else if (h >= 180 && h < 240) {
+    r = 0; g = x; b = c;
+  } else if (h >= 240 && h < 300) {
+    r = x; g = 0; b = c;
+  } else if (h >= 300 && h < 360) {
+    r = c; g = 0; b = x;
+  }
+  
+  return {
+    r: Math.round((r + m) * 255),
+    g: Math.round((g + m) * 255),
+    b: Math.round((b + m) * 255)
+  };
+}
+
+/**
+ * Legacy palette generation (fallback)
+ */
+function generateLegacyPalette(p: p5): p5.Color[] {
   const palette: p5.Color[] = [];
   const prevMode = (p as any)._colorMode; // best-effort; p5 lacks public getter
   p.colorMode(p.HSB, 360, 100, 100);

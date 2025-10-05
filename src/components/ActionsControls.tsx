@@ -1,6 +1,7 @@
 import { Component, createEffect, createSignal, onMount, onCleanup } from 'solid-js';
 import { 
   hasChanges, 
+  setHasChanges,
   clearChanges, 
   setNewPalette, 
   randomizeArtwork, 
@@ -23,6 +24,10 @@ import {
 } from '../store/artwork';
 import { SaveSlotGrid } from './SaveSlotGrid';
 import type { Ring } from '../model/ring';
+import { runQuickColorDiagnostic } from '../core/color-diagnostic';
+import { runSimpleColorTest } from '../core/simple-color-test';
+import { SimpleColorTest } from './SimpleColorTest';
+import { generateDirectRgbPalette } from '../core/color';
 
 // Props interface
 interface ActionsControlsProps {
@@ -36,6 +41,14 @@ export const ActionsControls: Component<ActionsControlsProps> = (props) => {
   const [strokeCount, setStrokeCount] = createSignal(globals().strokeCount);
   const [colorBleed, setColorBleed] = createSignal(globals().colorBleed);
   const [globalStrokeWidth, setGlobalStrokeWidth] = createSignal(globals().globalStrokeWidth);
+  
+  // Inner dot controls
+  const [innerDotVisible, setInnerDotVisible] = createSignal(innerDot().visible);
+  const [innerDotRadius, setInnerDotRadius] = createSignal(innerDot().radius);
+  const [innerDotColor1Index, setInnerDotColor1Index] = createSignal(innerDot().color1Index);
+  const [innerDotColor2Index, setInnerDotColor2Index] = createSignal(innerDot().color2Index);
+  const [innerDotGradientStop, setInnerDotGradientStop] = createSignal(innerDot().gradientStop);
+  const [innerDotMaxRadius, setInnerDotMaxRadius] = createSignal(innerDot().maxRadius);
 
   // Auto-rerender system
   const [countdown, setCountdown] = createSignal(0.8);
@@ -49,6 +62,15 @@ export const ActionsControls: Component<ActionsControlsProps> = (props) => {
     setStrokeCount(currentGlobals.strokeCount);
     setColorBleed(currentGlobals.colorBleed);
     setGlobalStrokeWidth(currentGlobals.globalStrokeWidth);
+    
+    // Update inner dot signals
+    const currentInnerDot = innerDot();
+    setInnerDotVisible(currentInnerDot.visible);
+    setInnerDotRadius(currentInnerDot.radius);
+    setInnerDotColor1Index(currentInnerDot.color1Index);
+    setInnerDotColor2Index(currentInnerDot.color2Index);
+    setInnerDotGradientStop(currentInnerDot.gradientStop);
+    setInnerDotMaxRadius(currentInnerDot.maxRadius);
   });
 
   // Auto-rerender timer
@@ -214,6 +236,12 @@ export const ActionsControls: Component<ActionsControlsProps> = (props) => {
 
   return (
     <div class="ring-control">
+      {/* Simple Color Test */}
+      <SimpleColorTest 
+        getP={() => props.getP()}
+        requestRedraw={props.requestRedraw}
+      />
+
       {/* Save Slot Grid */}
       <SaveSlotGrid 
         getP={() => props.getP()}
@@ -242,12 +270,68 @@ export const ActionsControls: Component<ActionsControlsProps> = (props) => {
         </div>
       </div>
 
+      {/* Color Diagnostic Button */}
+      <button
+        onClick={() => {
+          const p = props.getP();
+          if (p) {
+            runQuickColorDiagnostic(p);
+          }
+        }}
+        class="action-button diagnostic-button"
+        title="Run color diagnostic to identify UI vs P5 rendering mismatches"
+      >
+        🔍 Color Diagnostic
+      </button>
+
+      {/* Simple Color Test Button */}
+      <button
+        onClick={() => {
+          const p = props.getP();
+          if (p) {
+            runSimpleColorTest(p);
+          }
+        }}
+        class="action-button simple-test-button"
+        title="Test simple direct color rendering without conversions"
+      >
+        🎨 Simple Color Test
+      </button>
+
       {/* New Palette Button */}
       <button
         onClick={handleNewPalette}
         class="action-button"
       >
         New Palette
+      </button>
+
+      {/* Test Direct RGB Palette Button */}
+      <button
+        onClick={() => {
+          const p = props.getP();
+          if (p) {
+            console.log('=== TESTING DIRECT RGB PALETTE ===');
+            const newPalette = generateDirectRgbPalette(p);
+            console.log('Generated new palette with', newPalette.length, 'colors');
+            
+            // Test each color
+            newPalette.forEach((color, index) => {
+              p.colorMode(p.RGB, 255);
+              const r = p.red(color);
+              const g = p.green(color);
+              const b = p.blue(color);
+              console.log(`Color ${index}: rgb(${r}, ${g}, ${b})`);
+            });
+            
+            p.colorMode(p.HSB, 360, 100, 100);
+            console.log('=== END DIRECT RGB TEST ===');
+          }
+        }}
+        class="action-button test-palette-button"
+        title="Test the new direct RGB palette generation"
+      >
+        🧪 Test Direct RGB Palette
       </button>
 
       {/* Randomize Button */}
@@ -257,6 +341,152 @@ export const ActionsControls: Component<ActionsControlsProps> = (props) => {
       >
         Randomize
       </button>
+
+      {/* Inner Dot Controls */}
+      <div class="control-section">
+        <h4 class="section-title">Center Dot</h4>
+        
+        {/* Visibility Toggle */}
+        <label class="guides-checkbox">
+          <input
+            type="checkbox"
+            checked={innerDotVisible()}
+            onChange={(e) => {
+              setInnerDotVisible(e.target.checked);
+              setInnerDot({ ...innerDot(), visible: e.target.checked });
+              setHasChanges(true);
+              props.requestRedraw();
+            }}
+          />
+          Show Center Dot
+        </label>
+
+        {innerDotVisible() && (
+          <>
+            {/* Radius Control */}
+            <div class="control-group">
+              <label class="control-label">Radius</label>
+              <input
+                type="range"
+                min="0"
+                max={innerDotMaxRadius()}
+                step="0.1"
+                value={innerDotRadius()}
+                onInput={(e) => {
+                  const value = parseFloat(e.target.value);
+                  setInnerDotRadius(value);
+                  setInnerDot({ ...innerDot(), radius: value });
+                  setHasChanges(true);
+                  props.requestRedraw();
+                }}
+                class="control-range"
+              />
+              <div class="control-description">
+                <small>{innerDotRadius().toFixed(1)} / {innerDotMaxRadius().toFixed(1)}</small>
+              </div>
+            </div>
+
+            {/* Max Radius Control */}
+            <div class="control-group">
+              <label class="control-label">Max Radius</label>
+              <input
+                type="range"
+                min="1"
+                max="50"
+                step="0.5"
+                value={innerDotMaxRadius()}
+                onInput={(e) => {
+                  const value = parseFloat(e.target.value);
+                  setInnerDotMaxRadius(value);
+                  setInnerDot({ ...innerDot(), maxRadius: value });
+                  // Adjust current radius if it exceeds new max
+                  if (innerDotRadius() > value) {
+                    setInnerDotRadius(value);
+                    setInnerDot({ ...innerDot(), radius: value, maxRadius: value });
+                  } else {
+                    setInnerDot({ ...innerDot(), maxRadius: value });
+                  }
+                  setHasChanges(true);
+                  props.requestRedraw();
+                }}
+                class="control-range"
+              />
+              <div class="control-description">
+                <small>{innerDotMaxRadius().toFixed(1)}</small>
+              </div>
+            </div>
+
+            {/* Color 1 Index */}
+            <div class="control-group">
+              <label class="control-label">Color 1 Index</label>
+              <input
+                type="range"
+                min="0"
+                max="3"
+                step="1"
+                value={innerDotColor1Index()}
+                onInput={(e) => {
+                  const value = parseInt(e.target.value);
+                  setInnerDotColor1Index(value);
+                  setInnerDot({ ...innerDot(), color1Index: value });
+                  setHasChanges(true);
+                  props.requestRedraw();
+                }}
+                class="control-range"
+              />
+              <div class="control-description">
+                <small>Palette Color {innerDotColor1Index()}</small>
+              </div>
+            </div>
+
+            {/* Color 2 Index */}
+            <div class="control-group">
+              <label class="control-label">Color 2 Index</label>
+              <input
+                type="range"
+                min="0"
+                max="3"
+                step="1"
+                value={innerDotColor2Index()}
+                onInput={(e) => {
+                  const value = parseInt(e.target.value);
+                  setInnerDotColor2Index(value);
+                  setInnerDot({ ...innerDot(), color2Index: value });
+                  setHasChanges(true);
+                  props.requestRedraw();
+                }}
+                class="control-range"
+              />
+              <div class="control-description">
+                <small>Palette Color {innerDotColor2Index()}</small>
+              </div>
+            </div>
+
+            {/* Gradient Stop */}
+            <div class="control-group">
+              <label class="control-label">Gradient Stop</label>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={innerDotGradientStop()}
+                onInput={(e) => {
+                  const value = parseFloat(e.target.value);
+                  setInnerDotGradientStop(value);
+                  setInnerDot({ ...innerDot(), gradientStop: value });
+                  setHasChanges(true);
+                  props.requestRedraw();
+                }}
+                class="control-range"
+              />
+              <div class="control-description">
+                <small>{(innerDotGradientStop() * 100).toFixed(0)}%</small>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
 
       {/* Show Guides Checkbox */}
       <label class="guides-checkbox">

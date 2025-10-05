@@ -125,6 +125,39 @@
   transform: translateY(-1px);
 }
 
+.diagnostic-button {
+  background: rgba(255, 193, 7, 0.2) !important;
+  border-color: rgba(255, 193, 7, 0.4) !important;
+  color: #ffc107 !important;
+}
+
+.diagnostic-button:hover {
+  background: rgba(255, 193, 7, 0.3) !important;
+  border-color: rgba(255, 193, 7, 0.6) !important;
+}
+
+.simple-test-button {
+  background: rgba(76, 175, 80, 0.2) !important;
+  border-color: rgba(76, 175, 80, 0.4) !important;
+  color: #4caf50 !important;
+}
+
+.simple-test-button:hover {
+  background: rgba(76, 175, 80, 0.3) !important;
+  border-color: rgba(76, 175, 80, 0.6) !important;
+}
+
+.test-palette-button {
+  background: rgba(33, 150, 243, 0.2) !important;
+  border-color: rgba(33, 150, 243, 0.4) !important;
+  color: #2196f3 !important;
+}
+
+.test-palette-button:hover {
+  background: rgba(33, 150, 243, 0.3) !important;
+  border-color: rgba(33, 150, 243, 0.6) !important;
+}
+
 
 /* Control sections - more compact for header */
 .control-section {
@@ -155,6 +188,15 @@
   margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 0.3px;
+}
+
+/* Control groups */
+.control-group {
+  margin-bottom: 16px;
+}
+
+.control-group:last-child {
+  margin-bottom: 0;
 }
 
 /* Range inputs */
