@@ -7,10 +7,5 @@ export default defineConfig({
     solid(),
     viteSingleFile()
   ],
-  base: '/wheelgen/',
-  build: {
-    rollupOptions: {
-      input: 'src/main.tsx'
-    }
-  }
+  base: '/wheelgen/'
 });
