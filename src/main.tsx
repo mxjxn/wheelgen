@@ -2,6 +2,7 @@ import './style.css';
 import { mountSketch } from './core/p5-sketch';
 import { render } from 'solid-js/web';
 import { App } from './components/App';
+import { trackEvent, AnalyticsEvents } from './utils/analytics';
 
 // Create the main app container
 const appRoot = document.getElementById('app')!;
@@ -20,6 +21,20 @@ appRoot.appendChild(appContainer);
 
 // Mount p5 canvas to canvas container
 const api = mountSketch(canvasContainer);
+
+// Track app loaded
+trackEvent(AnalyticsEvents.APP_LOADED, {
+  timestamp: new Date().toISOString(),
+  user_agent: navigator.userAgent,
+});
+
+// Track session start
+trackEvent(AnalyticsEvents.SESSION_START);
+
+// Track session end when user leaves
+window.addEventListener('beforeunload', () => {
+  trackEvent(AnalyticsEvents.SESSION_END);
+});
 
 // Wait for p5 instance to be ready before rendering the app
 const waitForP5Instance = () => {
