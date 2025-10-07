@@ -1,0 +1,91 @@
+/* DevControls component styles */
+
+.dev-controls {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dev-controls .section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Action buttons */
+.action-button {
+  width: 100%;
+  margin-bottom: 8px;
+  background: rgba(60, 60, 60, 0.8);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.action-button:hover:not(:disabled) {
+  background: rgba(80, 80, 80, 0.9);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.diagnostic-button {
+  background: rgba(255, 193, 7, 0.2) !important;
+  border-color: rgba(255, 193, 7, 0.4) !important;
+  color: #ffc107 !important;
+}
+
+.diagnostic-button:hover {
+  background: rgba(255, 193, 7, 0.3) !important;
+  border-color: rgba(255, 193, 7, 0.6) !important;
+}
+
+.simple-test-button {
+  background: rgba(76, 175, 80, 0.2) !important;
+  border-color: rgba(76, 175, 80, 0.4) !important;
+  color: #4caf50 !important;
+}
+
+.simple-test-button:hover {
+  background: rgba(76, 175, 80, 0.3) !important;
+  border-color: rgba(76, 175, 80, 0.6) !important;
+}
+
+.test-palette-button {
+  background: rgba(33, 150, 243, 0.2) !important;
+  border-color: rgba(33, 150, 243, 0.4) !important;
+  color: #2196f3 !important;
+}
+
+.test-palette-button:hover {
+  background: rgba(33, 150, 243, 0.3) !important;
+  border-color: rgba(33, 150, 243, 0.6) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .dev-controls {
+    gap: 12px;
+  }
+  
+  .section-title {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  
+  .action-button {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+}

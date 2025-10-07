@@ -58,23 +58,23 @@
 }
 
 .ring-control {
-  background: rgba(20, 20, 20, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(20, 20, 20, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 6px;
   padding: 16px;
   width: 100%;
   box-sizing: border-box;
   transition: all 0.2s ease;
   /* Blur effect with fallbacks */
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
   /* Fallback for browsers that don't support backdrop-filter */
-  background: rgba(20, 20, 20, 0.8);
+  background: rgba(20, 20, 20, 0.2);
 }
 
 .ring-control:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(25, 25, 25, 0.7);
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(25, 25, 25, 0.2);
 }
 
 .ring-control:last-child {
@@ -264,16 +264,16 @@
 .symbol-group {
   margin-bottom: 16px;
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(30, 30, 30, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(30, 30, 30, 0.1);
   border-radius: 4px;
   width: 100%;
   box-sizing: border-box;
   /* Blur effect with fallbacks */
-  -webkit-backdrop-filter: blur(2px);
-  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(1px);
   /* Fallback for browsers that don't support backdrop-filter */
-  background: rgba(30, 30, 30, 0.7);
+  background: rgba(30, 30, 30, 0.2);
 }
 
 .symbol-group:last-child {

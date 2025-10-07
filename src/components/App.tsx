@@ -3,6 +3,9 @@ import { hasChanges, initializeArtwork, clearChanges, forceSave, rings } from '.
 import { RingsControls } from './RingsControls';
 import { ActionsControls } from './ActionsControls';
 import { ColorManagementPanel } from './ColorManagementPanel';
+import { CenterDotControls } from './CenterDotControls';
+import { SaveControls } from './SaveControls';
+import { DevControls } from './DevControls';
 import { RecoveryModal, useRecovery } from './RecoveryModal';
 import { StatusChips } from './StatusChips';
 import { TabContainer, type Tab } from './TabContainer';
@@ -23,6 +26,12 @@ export const App: Component<AppProps> = (props) => {
   // UI state management
   const [showOverlay, setShowOverlay] = createSignal(false);
   const [scrollY, setScrollY] = createSignal(0);
+  
+  // Check if dev mode is enabled (can be disabled for production)
+  const isDevMode = createMemo(() => {
+    // Check for development environment or explicit dev flag
+    return import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_TAB === 'true';
+  });
 
   // Initialize artwork when component mounts - but only if not already initialized
   onMount(() => {
@@ -137,6 +146,21 @@ export const App: Component<AppProps> = (props) => {
                   }
                 },
                 {
+                  id: 'colors',
+                  label: 'Colors',
+                  icon: '🎨',
+                  content: ColorManagementPanel,
+                  props: {
+                    getP: () => {
+                      if (!props.p5Instance) {
+                        return null;
+                      }
+                      return props.p5Instance;
+                    },
+                    requestRedraw: handleRequestRedraw
+                  }
+                },
+                {
                   id: 'actions',
                   label: 'Actions',
                   icon: '⚡',
@@ -152,10 +176,10 @@ export const App: Component<AppProps> = (props) => {
                   }
                 },
                 {
-                  id: 'colors',
-                  label: 'Colors',
-                  icon: '🎨',
-                  content: ColorManagementPanel,
+                  id: 'center-dot',
+                  label: 'Center Dot',
+                  icon: '🔴',
+                  content: CenterDotControls,
                   props: {
                     getP: () => {
                       if (!props.p5Instance) {
@@ -165,7 +189,37 @@ export const App: Component<AppProps> = (props) => {
                     },
                     requestRedraw: handleRequestRedraw
                   }
-                }
+                },
+                {
+                  id: 'save',
+                  label: 'Save',
+                  icon: '💾',
+                  content: SaveControls,
+                  props: {
+                    getP: () => {
+                      if (!props.p5Instance) {
+                        return null;
+                      }
+                      return props.p5Instance;
+                    },
+                    requestRedraw: handleRequestRedraw
+                  }
+                },
+                ...(isDevMode() ? [{
+                  id: 'dev',
+                  label: 'Dev',
+                  icon: '🔧',
+                  content: DevControls,
+                  props: {
+                    getP: () => {
+                      if (!props.p5Instance) {
+                        return null;
+                      }
+                      return props.p5Instance;
+                    },
+                    requestRedraw: handleRequestRedraw
+                  }
+                }] : [])
               ]}
               defaultTab="rings"
             />

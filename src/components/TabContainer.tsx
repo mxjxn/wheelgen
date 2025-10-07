@@ -25,17 +25,14 @@ export const TabContainer: Component<TabContainerProps> = (props) => {
 
   const renderTabContent = () => {
     const currentTab = activeTab();
+    const tab = props.tabs.find(t => t.id === currentTab);
     
-    switch (currentTab) {
-      case 'rings':
-        return <RingsControls {...props.tabs[0].props} />;
-      case 'actions':
-        return <ActionsControls {...props.tabs[1].props} />;
-      case 'colors':
-        return <ColorManagementPanel {...props.tabs[2].props} />;
-      default:
-        return <div>Unknown tab: {currentTab}</div>;
+    if (!tab) {
+      return <div>Unknown tab: {currentTab}</div>;
     }
+    
+    const TabComponent = tab.content;
+    return <TabComponent {...tab.props} />;
   };
 
   return (

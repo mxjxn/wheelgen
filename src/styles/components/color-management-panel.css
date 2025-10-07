@@ -40,7 +40,7 @@
 
 .palette-button {
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: #ffffff;
   padding: 8px 12px;
   border-radius: 4px;
@@ -52,7 +52,7 @@
 
 .palette-button:hover {
   background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .palette-button.random {
@@ -86,7 +86,7 @@
 .palette-swatch {
   width: 40px;
   height: 40px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.4);
   border-radius: 6px;
   cursor: pointer;
   display: flex;
@@ -132,7 +132,7 @@
 
 .background-button {
   background: rgba(100, 100, 100, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: #ffffff;
   padding: 8px 12px;
   border-radius: 4px;
@@ -144,5 +144,5 @@
 
 .background-button:hover {
   background: rgba(100, 100, 100, 0.3);
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
 }
