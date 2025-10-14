@@ -52,38 +52,34 @@ const RingControl: Component<{
     }
   });
 
-  // Debounced rendering for grammar changes
-  let grammarTimeout: ReturnType<typeof setTimeout> | null = null;
-  
-  // Cleanup timeout on unmount
-  onCleanup(() => {
-    if (grammarTimeout) {
-      clearTimeout(grammarTimeout);
-    }
-  });
-  
-  const handleGrammarChange = (newGrammar: string) => {
+  // Handle grammar input changes (only updates local state, no rendering)
+  const handleGrammarInput = (newGrammar: string) => {
     // Update text input immediately for responsive typing
     setGrammarString(newGrammar);
+  };
+
+  // Handle grammar submission (triggers actual rendering)
+  const handleGrammarSubmit = () => {
+    const currentGrammar = grammarString().trim();
     
     // Show updating indicator
     setIsUpdating(true);
     
-    // Clear existing timeout
-    if (grammarTimeout) {
-      clearTimeout(grammarTimeout);
+    // Trigger the actual render
+    const p = props.getP();
+    if (p) {
+      updateRingPattern(props.index, currentGrammar, p);
+      props.requestRedraw();
     }
-    
-    // Debounce the expensive art rendering
-    grammarTimeout = setTimeout(() => {
-      const p = props.getP();
-      if (p) {
-        updateRingPattern(props.index, newGrammar.trim(), p);
-        props.requestRedraw();
-      }
-      setIsUpdating(false);
-      grammarTimeout = null;
-    }, 300); // 300ms delay - adjust as needed
+    setIsUpdating(false);
+  };
+
+  // Handle Enter key press
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleGrammarSubmit();
+    }
   };
 
   const handleVisibilityChange = (checked: boolean) => {
@@ -117,10 +113,18 @@ const RingControl: Component<{
           <div class="grammar-input-container">
             <input
               value={grammarString()}
-              onInput={(e) => handleGrammarChange(e.currentTarget.value)}
+              onInput={(e) => handleGrammarInput(e.currentTarget.value)}
+              onKeyDown={handleKeyDown}
               class="grammar-input"
               placeholder="Enter grammar (e.g., d3h2v)"
             />
+            <button
+              onClick={handleGrammarSubmit}
+              class="grammar-submit-btn"
+              title="Apply grammar changes"
+            >
+              ✓
+            </button>
             <Show when={isUpdating()}>
               <span class="updating-indicator">⟳</span>
             </Show>

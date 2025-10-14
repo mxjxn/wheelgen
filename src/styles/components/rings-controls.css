@@ -254,6 +254,34 @@
   font-style: italic;
 }
 
+.grammar-submit-btn {
+  background: rgba(76, 175, 80, 0.8);
+  color: #fff;
+  border: 1px solid rgba(76, 175, 80, 0.6);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grammar-submit-btn:hover {
+  background: rgba(76, 175, 80, 1);
+  border-color: rgba(76, 175, 80, 0.8);
+  transform: translateY(-1px);
+}
+
+.grammar-submit-btn:active {
+  transform: translateY(0);
+  background: rgba(69, 160, 73, 0.9);
+}
+
 /* Symbol controls */
 .symbol-controls {
   margin-top: 16px;

@@ -6,6 +6,7 @@ import { ColorManagementPanel } from './ColorManagementPanel';
 import { CenterDotControls } from './CenterDotControls';
 import { SaveControls } from './SaveControls';
 import { DevControls } from './DevControls';
+import { GrammarRules } from './GrammarRules';
 import { RecoveryModal, useRecovery } from './RecoveryModal';
 import { StatusChips } from './StatusChips';
 import { TabContainer, type Tab } from './TabContainer';
@@ -13,6 +14,7 @@ import { deferredRenderManager } from '../core/deferred-render';
 import type p5 from 'p5';
 import '../styles/components/status-chips.css';
 import '../styles/components/tab-container.css';
+import '../styles/components/grammar-rules.css';
 import '../styles/components/app.css';
 
 interface AppProps {
@@ -143,6 +145,18 @@ export const App: Component<AppProps> = (props) => {
                       return props.p5Instance;
                     },
                     requestRedraw: handleRequestRedraw
+                  }
+                },
+                {
+                  id: 'grammar',
+                  label: 'Grammar',
+                  icon: '📝',
+                  content: GrammarRules,
+                  props: {
+                    onExampleClick: (example: string) => {
+                      // This will be handled by the GrammarRules component
+                      // Users can copy examples to their grammar inputs
+                    }
                   }
                 },
                 {

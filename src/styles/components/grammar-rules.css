@@ -1,0 +1,173 @@
+/* Grammar Rules Component - Simplified */
+.grammar-rules-simple {
+  color: #fff;
+  padding: 0;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.grammar-header {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.grammar-header h2 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.grammar-header p {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+}
+
+/* Sections */
+.grammar-section {
+  margin-bottom: 24px;
+}
+
+.grammar-section h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 6px;
+}
+
+/* Symbols Grid */
+.symbols-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.symbol-card {
+  background: rgba(40, 40, 40, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 12px;
+  text-align: center;
+}
+
+.symbol-pattern {
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: bold;
+  color: #4CAF50;
+  margin-bottom: 4px;
+}
+
+.symbol-description {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Rules List */
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rule-item {
+  background: rgba(30, 30, 30, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+}
+
+.rule-item strong {
+  color: #4CAF50;
+}
+
+.rule-item code {
+  background: rgba(0, 0, 0, 0.4);
+  color: #4CAF50;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+/* Examples Grid */
+.examples-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.example-card {
+  background: rgba(40, 40, 40, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.example-card:hover {
+  background: rgba(50, 50, 50, 0.6);
+  border-color: rgba(76, 175, 80, 0.6);
+  transform: translateY(-1px);
+}
+
+.example-card:active {
+  transform: translateY(0);
+}
+
+.example-pattern {
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: bold;
+  color: #4CAF50;
+  margin-bottom: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.example-description {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.3;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .symbols-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 6px;
+  }
+  
+  .examples-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 6px;
+  }
+  
+  .grammar-header h2 {
+    font-size: 18px;
+  }
+  
+  .grammar-section h3 {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .symbols-grid,
+  .examples-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
