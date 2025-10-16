@@ -16,7 +16,7 @@ import {
   setStrokeColorAssignment,
   colorAssignment,
 } from "../store/artwork";
-import { colorToRgbString } from "../core/color";
+import { colorToRgbString, batchConvertColorsToRgb } from "../core/color";
 
 // Props interface
 interface RingsControlsProps {
@@ -442,19 +442,10 @@ const StrokeColorControl: Component<{
         return [];
       }
       
-      // Convert colors using p5 methods
-      const colors = pal.map((color) => {
-        try {
-          const rgbString = colorToRgbString(p, color);
-          return rgbString;
-        } catch (error) {
-          return '#ffffff';
-        }
-      });
-      
-      return colors;
+      // Use batched conversion for better performance
+      return batchConvertColorsToRgb(p, pal);
     } catch (error) {
-      return [];
+      return pal.map(() => '#ffffff');
     }
   });
 

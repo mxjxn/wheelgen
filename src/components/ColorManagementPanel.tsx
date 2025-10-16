@@ -3,9 +3,11 @@ import {
   createMemo,
   createSignal,
   For,
+  createEffect,
+  onCleanup,
 } from "solid-js";
 import { palette, setPalette, markChanges, updatePaletteAndRings, updateBackgroundColor } from "../store/artwork";
-import { generatePalette, createHSBColor, colorToRgbString } from "../core/color";
+import { generatePalette, createHSBColor, colorToRgbString, batchConvertColorsToRgb } from "../core/color";
 import type p5 from "p5";
 
 // Color Management Panel Component
@@ -21,20 +23,41 @@ export const ColorManagementPanel: Component<{
   // Cached p5 instance for performance
   const p5Instance = createMemo(() => props.getP());
   
-  // Cached palette colors for efficient thumbnail rendering
-  const paletteColors = createMemo(() => {
+  // Debounced palette colors for efficient thumbnail rendering
+  const [paletteColors, setPaletteColors] = createSignal<string[]>([]);
+  let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
+  
+  // Debounced color conversion to prevent rapid-fire updates
+  createEffect(() => {
     const pal = currentPalette();
     const p = p5Instance();
-    if (!p) return pal.map(() => '#ffffff');
     
-    return pal.map((color) => {
+    if (!p || pal.length === 0) {
+      setPaletteColors(pal.map(() => '#ffffff'));
+      return;
+    }
+    
+    // Clear existing timeout
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+    
+    // Debounce color conversion by 16ms (one frame at 60fps)
+    debounceTimeout = setTimeout(() => {
       try {
-        const rgbString = colorToRgbString(p, color);
-        return rgbString;
+        // Use batched conversion for better performance
+        const rgbStrings = batchConvertColorsToRgb(p, pal);
+        setPaletteColors(rgbStrings);
       } catch (error) {
-        return '#ffffff';
+        setPaletteColors(pal.map(() => '#ffffff'));
       }
-    });
+    }, 16);
+  });
+  
+  onCleanup(() => {
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
   });
   
   // Generate palette based on harmony mode

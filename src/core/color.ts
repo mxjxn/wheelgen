@@ -162,6 +162,56 @@ export function colorToRgbString(p: p5, color: p5.Color): string {
   }
 }
 
+// OPTIMIZED: Batch convert multiple colors with single mode switch
+export function batchConvertColorsToRgb(p: p5, colors: p5.Color[]): string[] {
+  if (colors.length === 0) return [];
+  
+  // Store current color mode
+  const currentMode = (p as any)._colorMode;
+  const currentMaxes = (p as any)._colorMaxes;
+  
+  try {
+    // Single mode switch for all colors
+    p.colorMode(p.RGB, 255);
+    
+    const results = colors.map((color) => {
+      try {
+        const r = Math.round(p.red(color));
+        const g = Math.round(p.green(color));
+        const b = Math.round(p.blue(color));
+        return `rgb(${r}, ${g}, ${b})`;
+      } catch (error) {
+        return '#ffffff';
+      }
+    });
+    
+    // Restore original color mode once
+    if (currentMode === p.HSB) {
+      if (currentMaxes && currentMaxes.length >= 3) {
+        p.colorMode(p.HSB, currentMaxes[0], currentMaxes[1], currentMaxes[2]);
+      } else {
+        p.colorMode(p.HSB, 360, 100, 100);
+      }
+    } else {
+      if (currentMaxes && currentMaxes.length >= 3) {
+        p.colorMode(p.RGB, currentMaxes[0], currentMaxes[1], currentMaxes[2]);
+      } else {
+        p.colorMode(p.RGB, 255, 255, 255);
+      }
+    }
+    
+    return results;
+  } catch (error) {
+    // Restore mode even on error
+    if (currentMode === p.HSB) {
+      p.colorMode(p.HSB, 360, 100, 100);
+    } else {
+      p.colorMode(p.RGB, 255, 255, 255);
+    }
+    return colors.map(() => '#ffffff');
+  }
+}
+
 // Helper function to convert HSB to RGB with proper saturation handling
 export function hsbToRgb(p: p5, h: number, s: number, b: number): string {
   if (s <= 5) {

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Performance Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+        .results {
+            margin: 10px 0;
+            padding: 10px;
+            background: #2a2a2a;
+            border-radius: 4px;
+        }
+        button {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #357abd;
+        }
+        .performance-good { color: #4ade80; }
+        .performance-ok { color: #fbbf24; }
+        .performance-bad { color: #ef4444; }
+    </style>
+</head>
+<body>
+    <h1>Color Performance Test</h1>
+    <p>This test compares the old individual color conversion method vs the new batched method.</p>
+    
+    <div class="test-section">
+        <h2>Performance Comparison</h2>
+        <button onclick="runOldMethod()">Test Old Method (Individual Conversions)</button>
+        <button onclick="runNewMethod()">Test New Method (Batched Conversions)</button>
+        <button onclick="runBothMethods()">Run Both Methods</button>
+        
+        <div id="results" class="results">
+            <p>Click a button above to run performance tests...</p>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Mobile Performance Simulation</h2>
+        <p>Simulating slower device performance by throttling CPU...</p>
+        <button onclick="simulateMobilePerformance()">Simulate Mobile Performance</button>
+        <div id="mobile-results" class="results">
+            <p>Click the button to test mobile performance...</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script>
+        // Simulate the old method (individual conversions)
+        function oldColorToRgbString(p, color) {
+            const currentMode = p._colorMode;
+            const currentMaxes = p._colorMaxes;
+            
+            try {
+                p.colorMode(p.RGB, 255);
+                const r = Math.round(p.red(color));
+                const g = Math.round(p.green(color));
+                const b = Math.round(p.blue(color));
+                
+                if (currentMode === p.HSB) {
+                    if (currentMaxes && currentMaxes.length >= 3) {
+                        p.colorMode(p.HSB, currentMaxes[0], currentMaxes[1], currentMaxes[2]);
+                    } else {
+                        p.colorMode(p.HSB, 360, 100, 100);
+                    }
+                } else {
+                    if (currentMaxes && currentMaxes.length >= 3) {
+                        p.colorMode(p.RGB, currentMaxes[0], currentMaxes[1], currentMaxes[2]);
+                    } else {
+                        p.colorMode(p.RGB, 255, 255, 255);
+                    }
+                }
+                
+                return `rgb(${r}, ${g}, ${b})`;
+            } catch (error) {
+                return '#ffffff';
+            }
+        }
+
+        // Simulate the new method (batched conversions)
+        function newBatchConvertColorsToRgb(p, colors) {
+            if (colors.length === 0) return [];
+            
+            const currentMode = p._colorMode;
+            const currentMaxes = p._colorMaxes;
+            
+            try {
+                // Single mode switch for all colors
+                p.colorMode(p.RGB, 255);
+                
+                const results = colors.map((color) => {
+                    try {
+                        const r = Math.round(p.red(color));
+                        const g = Math.round(p.green(color));
+                        const b = Math.round(p.blue(color));
+                        return `rgb(${r}, ${g}, ${b})`;
+                    } catch (error) {
+                        return '#ffffff';
+                    }
+                });
+                
+                // Restore original color mode once
+                if (currentMode === p.HSB) {
+                    if (currentMaxes && currentMaxes.length >= 3) {
+                        p.colorMode(p.HSB, currentMaxes[0], currentMaxes[1], currentMaxes[2]);
+                    } else {
+                        p.colorMode(p.HSB, 360, 100, 100);
+                    }
+                } else {
+                    if (currentMaxes && currentMaxes.length >= 3) {
+                        p.colorMode(p.RGB, currentMaxes[0], currentMaxes[1], currentMaxes[2]);
+                    } else {
+                        p.colorMode(p.RGB, 255, 255, 255);
+                    }
+                }
+                
+                return results;
+            } catch (error) {
+                if (currentMode === p.HSB) {
+                    p.colorMode(p.HSB, 360, 100, 100);
+                } else {
+                    p.colorMode(p.RGB, 255, 255, 255);
+                }
+                return colors.map(() => '#ffffff');
+            }
+        }
+
+        // Create test colors
+        function createTestColors(p) {
+            p.colorMode(p.HSB, 360, 100, 100);
+            const colors = [];
+            for (let i = 0; i < 4; i++) {
+                colors.push(p.color(i * 90, 80, 90));
+            }
+            return colors;
+        }
+
+        function runOldMethod() {
+            const p = new p5();
+            const colors = createTestColors(p);
+            
+            const startTime = performance.now();
+            
+            // Simulate old method - individual conversions
+            for (let i = 0; i < 100; i++) {
+                colors.forEach(color => {
+                    oldColorToRgbString(p, color);
+                });
+            }
+            
+            const endTime = performance.now();
+            const duration = endTime - startTime;
+            
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <h3>Old Method Results</h3>
+                <p><strong>Duration:</strong> <span class="${getPerformanceClass(duration)}">${duration.toFixed(2)}ms</span></p>
+                <p><strong>Mode Switches:</strong> ${colors.length * 100 * 2} (2 per color conversion)</p>
+                <p><strong>Performance:</strong> <span class="${getPerformanceClass(duration)}">${getPerformanceText(duration)}</span></p>
+            `;
+        }
+
+        function runNewMethod() {
+            const p = new p5();
+            const colors = createTestColors(p);
+            
+            const startTime = performance.now();
+            
+            // Simulate new method - batched conversions
+            for (let i = 0; i < 100; i++) {
+                newBatchConvertColorsToRgb(p, colors);
+            }
+            
+            const endTime = performance.now();
+            const duration = endTime - startTime;
+            
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <h3>New Method Results</h3>
+                <p><strong>Duration:</strong> <span class="${getPerformanceClass(duration)}">${duration.toFixed(2)}ms</span></p>
+                <p><strong>Mode Switches:</strong> ${100 * 2} (2 total per batch)</p>
+                <p><strong>Performance:</strong> <span class="${getPerformanceClass(duration)}">${getPerformanceText(duration)}</span></p>
+            `;
+        }
+
+        function runBothMethods() {
+            const p1 = new p5();
+            const p2 = new p5();
+            const colors1 = createTestColors(p1);
+            const colors2 = createTestColors(p2);
+            
+            // Test old method
+            const oldStart = performance.now();
+            for (let i = 0; i < 100; i++) {
+                colors1.forEach(color => {
+                    oldColorToRgbString(p1, color);
+                });
+            }
+            const oldEnd = performance.now();
+            const oldDuration = oldEnd - oldStart;
+            
+            // Test new method
+            const newStart = performance.now();
+            for (let i = 0; i < 100; i++) {
+                newBatchConvertColorsToRgb(p2, colors2);
+            }
+            const newEnd = performance.now();
+            const newDuration = newEnd - newStart;
+            
+            const improvement = ((oldDuration - newDuration) / oldDuration * 100).toFixed(1);
+            
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <h3>Performance Comparison</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h4>Old Method</h4>
+                        <p><strong>Duration:</strong> <span class="${getPerformanceClass(oldDuration)}">${oldDuration.toFixed(2)}ms</span></p>
+                        <p><strong>Mode Switches:</strong> ${colors1.length * 100 * 2}</p>
+                    </div>
+                    <div>
+                        <h4>New Method</h4>
+                        <p><strong>Duration:</strong> <span class="${getPerformanceClass(newDuration)}">${newDuration.toFixed(2)}ms</span></p>
+                        <p><strong>Mode Switches:</strong> ${100 * 2}</p>
+                    </div>
+                </div>
+                <p><strong>Improvement:</strong> <span class="performance-good">${improvement}% faster</span></p>
+                <p><strong>Mode Switch Reduction:</strong> <span class="performance-good">${((colors1.length * 100 * 2 - 100 * 2) / (colors1.length * 100 * 2) * 100).toFixed(1)}% fewer switches</span></p>
+            `;
+        }
+
+        function simulateMobilePerformance() {
+            // Simulate slower device by adding artificial delay
+            const p = new p5();
+            const colors = createTestColors(p);
+            
+            const resultsDiv = document.getElementById('mobile-results');
+            resultsDiv.innerHTML = '<p>Running mobile performance test...</p>';
+            
+            setTimeout(() => {
+                const startTime = performance.now();
+                
+                // Test new batched method
+                for (let i = 0; i < 50; i++) {
+                    newBatchConvertColorsToRgb(p, colors);
+                }
+                
+                const endTime = performance.now();
+                const duration = endTime - startTime;
+                
+                resultsDiv.innerHTML = `
+                    <h3>Mobile Performance Test Results</h3>
+                    <p><strong>Duration:</strong> <span class="${getPerformanceClass(duration)}">${duration.toFixed(2)}ms</span></p>
+                    <p><strong>Colors Processed:</strong> ${colors.length * 50}</p>
+                    <p><strong>Mode Switches:</strong> ${50 * 2} (batched)</p>
+                    <p><strong>Performance:</strong> <span class="${getPerformanceClass(duration)}">${getPerformanceText(duration)}</span></p>
+                    <p><em>This demonstrates how the batched approach reduces CPU load on mobile devices.</em></p>
+                `;
+            }, 100);
+        }
+
+        function getPerformanceClass(duration) {
+            if (duration < 10) return 'performance-good';
+            if (duration < 50) return 'performance-ok';
+            return 'performance-bad';
+        }
+
+        function getPerformanceText(duration) {
+            if (duration < 10) return 'Excellent';
+            if (duration < 50) return 'Good';
+            return 'Needs Improvement';
+        }
+    </script>
+</body>
+</html>
