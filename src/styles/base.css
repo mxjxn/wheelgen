@@ -21,6 +21,13 @@
   --border-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Prevent zoom on mobile devices */
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
 /* Body and main container */
 body {
   background: #000;
@@ -96,10 +103,14 @@ input[type="text"], input[type="range"] {
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 8px 12px;
-  font-size: 14px;
+  font-size: 16px; /* Prevent zoom on iOS - minimum 16px */
   border-radius: 4px;
   font-family: inherit;
   transition: all 0.2s ease;
+  transform: scale(1);
+  -webkit-appearance: none;
+  appearance: none;
+  touch-action: manipulation;
 }
 
 input[type="text"]:focus {
@@ -134,6 +145,16 @@ input[type="checkbox"] {
   cursor: pointer;
   width: 16px;
   height: 16px;
+  touch-action: manipulation;
+}
+
+/* Prevent zoom on all input types */
+input, textarea, select {
+  font-size: 16px !important; /* Force 16px minimum to prevent iOS zoom */
+  touch-action: manipulation;
+  transform: scale(1);
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 /* Label styles */
@@ -178,10 +199,20 @@ input:focus-visible {
   
   input[type="text"], input[type="range"] {
     padding: 6px 10px;
-    font-size: 13px;
+    font-size: 16px; /* Keep 16px to prevent zoom */
   }
   
   label {
     font-size: 12px;
+  }
+  
+  /* Additional mobile zoom prevention */
+  * {
+    touch-action: manipulation;
+  }
+  
+  /* Ensure inputs maintain 16px font size on mobile */
+  input, textarea, select {
+    font-size: 16px !important;
   }
 }

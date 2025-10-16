@@ -36,6 +36,50 @@ window.addEventListener('beforeunload', () => {
   trackEvent(AnalyticsEvents.SESSION_END);
 });
 
+// Prevent unwanted zoom on mobile devices
+const preventZoom = () => {
+  // Prevent double-tap zoom
+  document.addEventListener('touchstart', function(event) {
+    if (event.touches.length > 1) {
+      event.preventDefault();
+    }
+  }, { passive: false });
+
+  // Prevent pinch zoom
+  document.addEventListener('touchend', function(event) {
+    if (event.touches.length > 1) {
+      event.preventDefault();
+    }
+  }, { passive: false });
+
+  // Prevent zoom on input focus
+  document.addEventListener('focusin', function(event) {
+    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+      // Force viewport to stay at 1.0 scale
+      const viewport = document.querySelector('meta[name="viewport"]');
+      if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+      }
+    }
+  });
+
+  // Prevent zoom on input blur
+  document.addEventListener('focusout', function(event) {
+    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+      // Reset viewport after input loses focus
+      setTimeout(() => {
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+        }
+      }, 100);
+    }
+  });
+};
+
+// Initialize zoom prevention
+preventZoom();
+
 // Wait for p5 instance to be ready before rendering the app
 const waitForP5Instance = () => {
   const p5Instance = api.getP();
