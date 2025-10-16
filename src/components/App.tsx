@@ -1,11 +1,10 @@
-import { Component, onMount, onCleanup, createSignal, Show, createMemo } from 'solid-js';
+import { Component, onMount, onCleanup, createSignal, Show } from 'solid-js';
 import { hasChanges, initializeArtwork, clearChanges, forceSave, rings } from '../store/artwork';
 import { RingsControls } from './RingsControls';
 import { ActionsControls } from './ActionsControls';
 import { ColorManagementPanel } from './ColorManagementPanel';
 import { CenterDotControls } from './CenterDotControls';
 import { SaveControls } from './SaveControls';
-import { DevControls } from './DevControls';
 import { GrammarRules } from './GrammarRules';
 import { RecoveryModal, useRecovery } from './RecoveryModal';
 import { StatusChips } from './StatusChips';
@@ -29,11 +28,6 @@ export const App: Component<AppProps> = (props) => {
   const [showOverlay, setShowOverlay] = createSignal(false);
   const [scrollY, setScrollY] = createSignal(0);
   
-  // Check if dev mode is enabled (can be disabled for production)
-  const isDevMode = createMemo(() => {
-    // Check for development environment or explicit dev flag
-    return import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_TAB === 'true';
-  });
 
   // Initialize artwork when component mounts - but only if not already initialized
   onMount(() => {
@@ -218,22 +212,7 @@ export const App: Component<AppProps> = (props) => {
                     },
                     requestRedraw: handleRequestRedraw
                   }
-                },
-                ...(isDevMode() ? [{
-                  id: 'dev',
-                  label: 'Dev',
-                  icon: '🔧',
-                  content: DevControls,
-                  props: {
-                    getP: () => {
-                      if (!props.p5Instance) {
-                        return null;
-                      }
-                      return props.p5Instance;
-                    },
-                    requestRedraw: handleRequestRedraw
-                  }
-                }] : [])
+                }
               ]}
               defaultTab="rings"
             />
