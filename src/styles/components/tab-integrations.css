@@ -1,0 +1,489 @@
+/* Tab Integration Styles - Matching existing control panel styling */
+
+/* Performance Tab */
+.performance-tab {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.performance-tab .performance-controls {
+  margin-bottom: 20px;
+}
+
+.performance-tab .control-group {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(20, 20, 20, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  background: rgba(20, 20, 20, 0.2);
+}
+
+.performance-tab .control-group:last-child {
+  margin-bottom: 0;
+}
+
+.performance-tab .control-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #ccc;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.performance-tab select,
+.performance-tab input[type="range"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: rgba(30, 30, 30, 0.8);
+  color: white;
+  font-size: 12px;
+}
+
+.performance-tab select:focus,
+.performance-tab input[type="range"]:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.performance-tab input[type="range"] {
+  accent-color: #888;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0;
+}
+
+.performance-tab input[type="range"]::-webkit-slider-thumb {
+  background: #888;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.performance-tab input[type="range"]::-webkit-slider-thumb:hover {
+  background: #aaa;
+  transform: scale(1.2);
+}
+
+.performance-tab .control-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.performance-tab .control-buttons button {
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: rgba(60, 60, 60, 0.8);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.performance-tab .control-buttons button:hover {
+  background: rgba(80, 80, 80, 0.9);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.performance-tab .performance-metrics {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 16px;
+}
+
+.performance-tab .metrics-section {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(20, 20, 20, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  background: rgba(20, 20, 20, 0.2);
+}
+
+.performance-tab .metrics-section:last-child {
+  margin-bottom: 0;
+}
+
+.performance-tab .metrics-section h4 {
+  margin: 0 0 8px 0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.performance-tab .metric-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.performance-tab .metric-row:last-child {
+  border-bottom: none;
+}
+
+.performance-tab .metric-row span:first-child {
+  color: #ccc;
+  font-size: 12px;
+}
+
+.performance-tab .metric-row span:last-child {
+  color: #fff;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.performance-tab .analysis {
+  margin-top: 8px;
+}
+
+.performance-tab .analysis-item {
+  padding: 8px;
+  margin: 4px 0;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.performance-tab .analysis-item.success {
+  background: rgba(76, 175, 80, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  color: #4caf50;
+}
+
+.performance-tab .analysis-item.warning {
+  background: rgba(255, 152, 0, 0.2);
+  border: 1px solid rgba(255, 152, 0, 0.3);
+  color: #ff9800;
+}
+
+/* Download Tab */
+.download-tab {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.download-tab .download-options-panel {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.download-tab .options-content {
+  padding: 0;
+}
+
+.download-tab .option-group {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(20, 20, 20, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  background: rgba(20, 20, 20, 0.2);
+}
+
+.download-tab .option-group:last-child {
+  margin-bottom: 0;
+}
+
+.download-tab .option-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #ccc;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.download-tab .format-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.download-tab .format-button {
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: rgba(60, 60, 60, 0.8);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.download-tab .format-button:hover {
+  background: rgba(80, 80, 80, 0.9);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.download-tab .format-button.active {
+  background: rgba(0, 122, 204, 0.8);
+  border-color: rgba(0, 153, 255, 0.6);
+}
+
+.download-tab input[type="range"] {
+  width: 100%;
+  margin: 8px 0;
+  accent-color: #888;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.download-tab input[type="range"]::-webkit-slider-thumb {
+  background: #888;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.download-tab input[type="range"]::-webkit-slider-thumb:hover {
+  background: #aaa;
+  transform: scale(1.2);
+}
+
+.download-tab input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: rgba(30, 30, 30, 0.8);
+  color: white;
+  font-size: 12px;
+}
+
+.download-tab input[type="text"]:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.download-tab .info-section {
+  background: rgba(20, 20, 20, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 12px;
+  border-radius: 6px;
+  margin: 16px 0;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  background: rgba(20, 20, 20, 0.2);
+}
+
+.download-tab .info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.download-tab .info-row:last-child {
+  margin-bottom: 0;
+}
+
+.download-tab .info-row span:first-child {
+  color: #ccc;
+  font-size: 12px;
+}
+
+.download-tab .info-row span:last-child {
+  color: #fff;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.download-tab .action-button {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(0, 122, 204, 0.6);
+  border-radius: 4px;
+  background: rgba(0, 122, 204, 0.8);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.download-tab .action-button:hover:not(:disabled) {
+  background: rgba(0, 153, 255, 0.9);
+  border-color: rgba(0, 153, 255, 0.8);
+}
+
+.download-tab .action-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Positioning Tab */
+.positioning-tab {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.positioning-tab .zoom-controls {
+  padding: 0;
+}
+
+.positioning-tab .control-group {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(20, 20, 20, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  background: rgba(20, 20, 20, 0.2);
+}
+
+.positioning-tab .control-group:last-child {
+  margin-bottom: 0;
+}
+
+.positioning-tab .control-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #ccc;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.positioning-tab .zoom-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.positioning-tab .zoom-button {
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: rgba(60, 60, 60, 0.8);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.positioning-tab .zoom-button:hover {
+  background: rgba(80, 80, 80, 0.9);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.positioning-tab .zoom-slider,
+.positioning-tab .pan-slider {
+  width: 100%;
+  margin: 8px 0;
+  accent-color: #888;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.positioning-tab .zoom-slider::-webkit-slider-thumb,
+.positioning-tab .pan-slider::-webkit-slider-thumb {
+  background: #888;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.positioning-tab .zoom-slider::-webkit-slider-thumb:hover,
+.positioning-tab .pan-slider::-webkit-slider-thumb:hover {
+  background: #aaa;
+  transform: scale(1.2);
+}
+
+.positioning-tab .control-buttons {
+  margin-top: 20px;
+}
+
+.positioning-tab .action-button {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(0, 122, 204, 0.6);
+  border-radius: 4px;
+  background: rgba(0, 122, 204, 0.8);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.positioning-tab .action-button:hover {
+  background: rgba(0, 153, 255, 0.9);
+  border-color: rgba(0, 153, 255, 0.8);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .performance-tab,
+  .download-tab,
+  .positioning-tab {
+    gap: 12px;
+  }
+  
+  .performance-tab .control-group,
+  .download-tab .option-group,
+  .positioning-tab .control-group {
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+  
+  .download-tab .format-buttons {
+    gap: 6px;
+  }
+  
+  .download-tab .format-button,
+  .performance-tab .control-buttons button,
+  .positioning-tab .zoom-button {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
+/* Browser support fallbacks */
+@supports not (backdrop-filter: blur(2px)) {
+  .performance-tab .control-group,
+  .download-tab .option-group,
+  .positioning-tab .control-group,
+  .performance-tab .metrics-section,
+  .download-tab .info-section {
+    background: rgba(20, 20, 20, 0.4);
+  }
+}

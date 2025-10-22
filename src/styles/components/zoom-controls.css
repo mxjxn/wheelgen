@@ -1,0 +1,302 @@
+/* Zoom Controls Styles */
+.zoom-controls-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Fixed positioning for main zoom controls */
+.zoom-controls-fixed {
+  position: fixed;
+  top: 230px; /* Position below download button */
+  right: 20px;
+  z-index: 1000;
+}
+
+.zoom-toggle-button {
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-size: 16px;
+  width: 60px;
+  height: 60px;
+}
+
+.zoom-toggle-button:hover {
+  background: rgba(0, 0, 0, 0.9);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.1);
+}
+
+.zoom-toggle-button.active {
+  background: rgba(255, 152, 0, 0.8);
+  border-color: rgba(255, 152, 0, 0.6);
+}
+
+.zoom-toggle-button.active:hover {
+  background: rgba(255, 152, 0, 0.9);
+  border-color: rgba(255, 152, 0, 0.8);
+}
+
+/* Zoom controls panel */
+.zoom-controls-panel {
+  position: absolute;
+  top: 70px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  min-width: 280px;
+  max-width: 350px;
+  z-index: 1000;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.controls-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.controls-header h4 {
+  margin: 0;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.close-controls {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.close-controls:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.controls-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.zoom-info {
+  text-align: center;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.zoom-info span {
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.zoom-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.zoom-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: white;
+  padding: 12px 16px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 50px;
+}
+
+.zoom-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.zoom-button.reset {
+  background: rgba(255, 152, 0, 0.2);
+  border-color: rgba(255, 152, 0, 0.4);
+}
+
+.zoom-button.reset:hover {
+  background: rgba(255, 152, 0, 0.3);
+  border-color: rgba(255, 152, 0, 0.6);
+}
+
+.pan-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.pan-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.pan-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: white;
+  padding: 8px 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pan-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.pan-info {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+.info-row:last-child {
+  margin-bottom: 0;
+}
+
+.info-row span:first-child {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.info-row span:last-child {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.shortcuts-info {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.shortcuts-info h5 {
+  margin: 0 0 8px 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.shortcut-row {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  margin-bottom: 2px;
+}
+
+.shortcut-row:last-child {
+  margin-bottom: 0;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .zoom-controls-fixed {
+    top: 230px; /* Keep below download button on mobile */
+    right: 10px;
+  }
+  
+  .zoom-toggle-button {
+    width: 50px;
+    height: 50px;
+    font-size: 14px;
+  }
+  
+  .zoom-controls-panel {
+    right: -10px;
+    left: -10px;
+    min-width: auto;
+    max-width: none;
+    top: 60px;
+  }
+  
+  .zoom-buttons {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .zoom-button {
+    padding: 10px 14px;
+    font-size: 16px;
+  }
+  
+  .pan-controls {
+    gap: 2px;
+  }
+  
+  .pan-button {
+    padding: 6px 10px;
+    font-size: 14px;
+    min-width: 35px;
+    min-height: 35px;
+  }
+}
+
+/* Browser support fallbacks */
+@supports not (backdrop-filter: blur(15px)) {
+  .zoom-controls-panel {
+    background: rgba(0, 0, 0, 0.98);
+  }
+  
+  .zoom-toggle-button {
+    background: rgba(0, 0, 0, 0.9);
+  }
+}

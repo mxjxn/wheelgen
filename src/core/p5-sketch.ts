@@ -30,6 +30,22 @@ export function mountSketch(container: HTMLElement) {
       p.noLoop();
       p.background(0);
       
+      // Enable right-click context menu for saving
+      const canvas = p.canvas as HTMLCanvasElement;
+      canvas.style.cursor = 'default';
+      
+      // Add context menu event listener for right-click save
+      canvas.addEventListener('contextmenu', (e) => {
+        // Allow default context menu (right-click save)
+        // The browser's native "Save image as..." will work
+        console.log('Right-click detected - use browser\'s "Save image as..." option');
+      });
+      
+      // Initialize zoom and pan values
+      (window as any).zoomLevel = 1.0;
+      (window as any).panX = 0;
+      (window as any).panY = 0;
+      
       // Only initialize artwork if not already done
       if (!isInitialized) {
         initializeArtworkStore(p);
@@ -65,7 +81,16 @@ export function mountSketch(container: HTMLElement) {
       }
       
       p.push();
+      
+      // Apply zoom and pan transformations
+      const zoomLevel = (window as any).zoomLevel || 1.0;
+      const panX = (window as any).panX || 0;
+      const panY = (window as any).panY || 0;
+      
+      // Center the coordinate system and apply transformations
       p.translate(p.width / 2, p.height / 2);
+      p.scale(zoomLevel);
+      p.translate(panX, panY);
       
       // Simple guides - now reactive to store
       if (guidesVisible()) {
@@ -75,9 +100,9 @@ export function mountSketch(container: HTMLElement) {
           const angle = p.map(i, 0, 64, 0, p.TWO_PI);
           const x = radius * Math.cos(angle);
           const y = radius * Math.sin(angle);
-          if (i % (64 / 16) === 0) { p.stroke(255, 0, 0, 60); p.strokeWeight(1.5); }
-          else if (i % (64 / 32) === 0) { p.stroke(0, 255, 0, 40); p.strokeWeight(1); }
-          else { p.stroke(0, 0, 255, 30); p.strokeWeight(0.5); }
+          if (i % (64 / 16) === 0) { p.stroke(255, 0, 0, 60); p.strokeWeight(1.5 / zoomLevel); }
+          else if (i % (64 / 32) === 0) { p.stroke(0, 255, 0, 40); p.strokeWeight(1 / zoomLevel); }
+          else { p.stroke(0, 0, 255, 30); p.strokeWeight(0.5 / zoomLevel); }
           p.line(0, 0, x, y);
         }
         p.colorMode(p.HSB, 360, 100, 100);

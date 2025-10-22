@@ -1,141 +1,217 @@
-import { Component, createEffect, createSignal, createMemo } from 'solid-js';
-import { performanceMetrics, isRendering, lastRenderTime, queueSize } from '../core/deferred-render';
+import { Component, createSignal, onMount, onCleanup, Show } from 'solid-js';
+import { getHybridRenderer, RenderingMode } from '../core/hybrid-renderer';
 
 interface PerformanceMonitorProps {
-  showDetails?: boolean;
-  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  className?: string;
 }
 
 export const PerformanceMonitor: Component<PerformanceMonitorProps> = (props) => {
-  const [showDetails, setShowDetails] = createSignal(props.showDetails || false);
-  const [isVisible, setIsVisible] = createSignal(true);
-  
-  // Get performance metrics
-  const metrics = createMemo(() => performanceMetrics());
-  
-  // Performance status color
-  const getStatusColor = (renderTime: number) => {
-    if (renderTime < 16) return '#4ade80'; // Green - good
-    if (renderTime < 33) return '#fbbf24'; // Yellow - acceptable
-    return '#ef4444'; // Red - slow
+  const [metrics, setMetrics] = createSignal<any>(null);
+  const [isVisible, setIsVisible] = createSignal(false);
+  const [renderingMode, setRenderingMode] = createSignal<RenderingMode>('auto');
+  const [qualityLevel, setQualityLevel] = createSignal<'fast' | 'balanced' | 'high'>('balanced');
+  const [pixelThreshold, setPixelThreshold] = createSignal(100);
+
+  const hybridRenderer = getHybridRenderer();
+
+  onMount(() => {
+    const interval = setInterval(() => {
+      const currentMetrics = hybridRenderer.getPerformanceMetrics();
+      setMetrics(currentMetrics);
+    }, 1000); // Update every second
+
+    onCleanup(() => clearInterval(interval));
+  });
+
+  const handleModeChange = (mode: RenderingMode) => {
+    setRenderingMode(mode);
+    hybridRenderer.updateConfig({ mode });
   };
-  
-  // Performance status text
-  const getStatusText = (renderTime: number) => {
-    if (renderTime < 16) return 'Fast';
-    if (renderTime < 33) return 'OK';
-    return 'Slow';
+
+  const handleQualityChange = (quality: 'fast' | 'balanced' | 'high') => {
+    setQualityLevel(quality);
+    hybridRenderer.updateConfig({ qualityLevel: quality });
   };
-  
+
+  const handleThresholdChange = (threshold: number) => {
+    setPixelThreshold(threshold);
+    hybridRenderer.updateConfig({ pixelThreshold: threshold });
+  };
+
+  const resetMetrics = () => {
+    hybridRenderer.resetMetrics();
+    setMetrics(null);
+  };
+
+  const clearCaches = () => {
+    hybridRenderer.clearCaches();
+  };
+
   return (
-    <div 
-      class="performance-monitor"
-      classList={{
-        'top-left': props.position === 'top-left',
-        'top-right': props.position === 'top-right',
-        'bottom-left': props.position === 'bottom-left',
-        'bottom-right': props.position === 'bottom-right'
-      }}
-    >
-      {/* Main Status Indicator */}
-      <div class="performance-status">
-        <div 
-          class="status-indicator"
-          classList={{ 
-            rendering: isRendering(),
-            'has-queue': queueSize() > 0
-          }}
-          title={`${getStatusText(lastRenderTime())} - ${lastRenderTime().toFixed(1)}ms`}
+    <>
+      <Show when={!isVisible()}>
+        <button
+          onClick={() => setIsVisible(true)}
+          class={`performance-monitor-toggle ${props.className || ''}`}
+          title="Show Performance Monitor"
         >
-          {isRendering() ? '🔄' : queueSize() > 0 ? '⏳' : '✅'}
-        </div>
-        
-        <div class="status-text">
-          <span class="render-time" style={`color: ${getStatusColor(lastRenderTime())}`}>
-            {lastRenderTime().toFixed(1)}ms
-          </span>
-          {queueSize() > 0 && (
-            <span class="queue-count">
-              +{queueSize()}
-            </span>
-          )}
-        </div>
-      </div>
-      
-      {/* Detailed Metrics (collapsible) */}
-      <Show when={showDetails()}>
-        <div class="performance-details">
-          <div class="metric">
-            <span class="metric-label">Avg:</span>
-            <span class="metric-value">{metrics().averageRenderTime.toFixed(1)}ms</span>
+          📊
+        </button>
+      </Show>
+
+      <Show when={isVisible()}>
+        <div class={`performance-monitor ${props.className || ''}`}>
+          <div class="performance-monitor-header">
+            <h3>Performance Monitor</h3>
+            <button
+              onClick={() => setIsVisible(false)}
+              class="close-button"
+              title="Hide Performance Monitor"
+            >
+              ×
+            </button>
           </div>
-          
-          <div class="metric">
-            <span class="metric-label">Total:</span>
-            <span class="metric-value">{metrics().totalRenders}</span>
+
+          <div class="performance-controls">
+            <div class="control-group">
+              <label>Rendering Mode:</label>
+              <select
+                value={renderingMode()}
+                onChange={(e) => handleModeChange(e.target.value as RenderingMode)}
+              >
+                <option value="auto">Auto</option>
+                <option value="pixel">Pixel Only</option>
+                <option value="vector">Vector Only</option>
+                <option value="hybrid">Hybrid</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <label>Quality Level:</label>
+              <select
+                value={qualityLevel()}
+                onChange={(e) => handleQualityChange(e.target.value as 'fast' | 'balanced' | 'high')}
+              >
+                <option value="fast">Fast</option>
+                <option value="balanced">Balanced</option>
+                <option value="high">High Quality</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <label>Pixel Threshold:</label>
+              <input
+                type="range"
+                min="10"
+                max="500"
+                value={pixelThreshold()}
+                onChange={(e) => handleThresholdChange(parseInt(e.target.value))}
+              />
+              <span>{pixelThreshold()}</span>
+            </div>
+
+            <div class="control-buttons">
+              <button onClick={resetMetrics}>Reset Metrics</button>
+              <button onClick={clearCaches}>Clear Caches</button>
+            </div>
           </div>
-          
-          <div class="metric">
-            <span class="metric-label">Slow:</span>
-            <span class="metric-value" style={`color: ${metrics().slowRenders > 0 ? '#ef4444' : '#4ade80'}`}>
-              {metrics().slowRenders}
-            </span>
-          </div>
-          
-          <div class="metric">
-            <span class="metric-label">Queue:</span>
-            <span class="metric-value">{metrics().queueSize}</span>
-          </div>
+
+          <Show when={metrics()}>
+            <div class="performance-metrics">
+              <div class="metrics-section">
+                <h4>Render Statistics</h4>
+                <div class="metric-row">
+                  <span>Total Particles:</span>
+                  <span>{metrics()!.totalParticles}</span>
+                </div>
+                <div class="metric-row">
+                  <span>Pixel Renders:</span>
+                  <span>{metrics()!.pixelRenderCount}</span>
+                </div>
+                <div class="metric-row">
+                  <span>Vector Renders:</span>
+                  <span>{metrics()!.vectorRenderCount}</span>
+                </div>
+                <div class="metric-row">
+                  <span>Pixel Render %:</span>
+                  <span>{metrics()!.pixelRenderPercentage.toFixed(1)}%</span>
+                </div>
+              </div>
+
+              <div class="metrics-section">
+                <h4>Performance</h4>
+                <div class="metric-row">
+                  <span>Avg Pixel Time:</span>
+                  <span>{metrics()!.averagePixelRenderTime.toFixed(2)}ms</span>
+                </div>
+                <div class="metric-row">
+                  <span>Avg Vector Time:</span>
+                  <span>{metrics()!.averageVectorRenderTime.toFixed(2)}ms</span>
+                </div>
+                <div class="metric-row">
+                  <span>Total Pixel Time:</span>
+                  <span>{metrics()!.pixelRenderTime.toFixed(2)}ms</span>
+                </div>
+                <div class="metric-row">
+                  <span>Total Vector Time:</span>
+                  <span>{metrics()!.vectorRenderTime.toFixed(2)}ms</span>
+                </div>
+              </div>
+
+              <div class="metrics-section">
+                <h4>Cache Statistics</h4>
+                <div class="metric-row">
+                  <span>Cache Size:</span>
+                  <span>{metrics()!.cacheStats.size}</span>
+                </div>
+                <div class="metric-row">
+                  <span>Cache Hits:</span>
+                  <span>{metrics()!.cacheStats.hits}</span>
+                </div>
+                <div class="metric-row">
+                  <span>Cache Misses:</span>
+                  <span>{metrics()!.cacheStats.misses}</span>
+                </div>
+                <div class="metric-row">
+                  <span>Hit Rate:</span>
+                  <span>{(metrics()!.cacheStats.hitRate * 100).toFixed(1)}%</span>
+                </div>
+              </div>
+
+              <div class="metrics-section">
+                <h4>Performance Analysis</h4>
+                <div class="analysis">
+                  <Show when={metrics()!.pixelRenderPercentage > 80}>
+                    <div class="analysis-item success">
+                      ✓ High pixel rendering usage - good for performance
+                    </div>
+                  </Show>
+                  <Show when={metrics()!.cacheStats.hitRate > 0.7}>
+                    <div class="analysis-item success">
+                      ✓ Good cache hit rate - textures are being reused
+                    </div>
+                  </Show>
+                  <Show when={metrics()!.averagePixelRenderTime < metrics()!.averageVectorRenderTime}>
+                    <div class="analysis-item success">
+                      ✓ Pixel rendering is faster than vector rendering
+                    </div>
+                  </Show>
+                  <Show when={metrics()!.totalParticles > 1000}>
+                    <div class="analysis-item warning">
+                      ⚠ High particle count - consider optimizing artwork complexity
+                    </div>
+                  </Show>
+                  <Show when={metrics()!.cacheStats.hitRate < 0.3}>
+                    <div class="analysis-item warning">
+                      ⚠ Low cache hit rate - many unique textures being generated
+                    </div>
+                  </Show>
+                </div>
+              </div>
+            </div>
+          </Show>
         </div>
       </Show>
-      
-      {/* Toggle Button */}
-      <button 
-        class="toggle-details"
-        onClick={() => setShowDetails(!showDetails())}
-        title={showDetails() ? 'Hide details' : 'Show details'}
-      >
-        {showDetails() ? '▲' : '▼'}
-      </button>
-      
-      {/* Hide/Show Button */}
-      <button 
-        class="toggle-visibility"
-        onClick={() => setIsVisible(!isVisible())}
-        title={isVisible() ? 'Hide monitor' : 'Show monitor'}
-      >
-        {isVisible() ? '−' : '+'}
-      </button>
-    </div>
-  );
-};
-
-// Mini performance indicator for corner display
-export const MiniPerformanceIndicator: Component<{ position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' }> = (props) => {
-  const metrics = createMemo(() => performanceMetrics());
-  
-  const getIndicatorColor = (renderTime: number) => {
-    if (renderTime < 16) return '#4ade80';
-    if (renderTime < 33) return '#fbbf24';
-    return '#ef4444';
-  };
-  
-  return (
-    <div 
-      class="mini-performance-indicator"
-      classList={{
-        'top-left': props.position === 'top-left',
-        'top-right': props.position === 'top-right',
-        'bottom-left': props.position === 'bottom-left',
-        'bottom-right': props.position === 'bottom-right'
-      }}
-      title={`Render: ${lastRenderTime().toFixed(1)}ms | Queue: ${queueSize()} | Status: ${isRendering() ? 'Rendering' : 'Idle'}`}
-    >
-      <div 
-        class="indicator-dot"
-        style={`background-color: ${getIndicatorColor(lastRenderTime())}`}
-      />
-      <span class="render-time">{lastRenderTime().toFixed(0)}ms</span>
-    </div>
+    </>
   );
 };
