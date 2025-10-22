@@ -9,12 +9,14 @@ import { GrammarRules } from './GrammarRules';
 import { RecoveryModal, useRecovery } from './RecoveryModal';
 import { StatusChips } from './StatusChips';
 import { TabContainer, type Tab } from './TabContainer';
+import { PerformanceMonitor } from './PerformanceMonitor';
 import { deferredRenderManager } from '../core/deferred-render';
 import type p5 from 'p5';
 import '../styles/components/status-chips.css';
 import '../styles/components/tab-container.css';
 import '../styles/components/grammar-rules.css';
 import '../styles/components/app.css';
+import '../styles/components/performance-monitor.css';
 
 interface AppProps {
   p5Instance: p5;
@@ -230,6 +232,9 @@ export const App: Component<AppProps> = (props) => {
           {showOverlay() ? '🎨' : '⚙️'}
         </span>
       </button>
+      
+      {/* Performance Monitor */}
+      <PerformanceMonitor />
       
       {/* Recovery Modal */}
       {showRecovery && (
