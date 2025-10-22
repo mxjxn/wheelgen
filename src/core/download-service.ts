@@ -270,6 +270,37 @@ export class DownloadService {
   }
 
   /**
+   * Estimate file size for download options
+   */
+  static estimateFileSize(p: p5 | null, options: DownloadOptions = {}): string {
+    if (!p || !p.canvas) return 'Unknown';
+    
+    const canvas = p.canvas as HTMLCanvasElement;
+    let width = canvas.width;
+    let height = canvas.height;
+    
+    // Adjust for square crop
+    if (options.cropMode === 'square') {
+      const squareSize = options.squareSize || this.calculateOptimalSquareSize(canvas);
+      width = height = squareSize;
+    }
+    
+    const pixelCount = width * height;
+    
+    if (options.format === 'jpeg') {
+      // Rough estimate: JPEG compression ratio varies, but typically 10:1 to 20:1
+      const quality = options.quality || 0.9;
+      const compressionRatio = 15 * quality; // Higher quality = less compression
+      const estimatedBytes = pixelCount * 3 / compressionRatio; // 3 bytes per pixel (RGB)
+      return this.formatBytes(estimatedBytes);
+    } else {
+      // PNG: roughly 4 bytes per pixel (RGBA) with some compression
+      const estimatedBytes = pixelCount * 3.5; // Slightly less than 4 due to compression
+      return this.formatBytes(estimatedBytes);
+    }
+  }
+
+  /**
    * Format bytes to human readable string
    */
   private static formatBytes(bytes: number): string {

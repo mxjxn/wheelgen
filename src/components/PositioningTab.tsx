@@ -1,5 +1,6 @@
 import { Component, createSignal } from 'solid-js';
 import type p5 from 'p5';
+import '../styles/components/performance-positioning-controls.css';
 
 interface PositioningTabProps {
   getP: () => p5 | null;
@@ -7,7 +8,6 @@ interface PositioningTabProps {
 }
 
 export const PositioningTab: Component<PositioningTabProps> = (props) => {
-  console.log('PositioningTab rendered');
   const [zoomLevel, setZoomLevel] = createSignal(1.0);
   const [panX, setPanX] = createSignal(0);
   const [panY, setPanY] = createSignal(0);
@@ -56,55 +56,58 @@ export const PositioningTab: Component<PositioningTabProps> = (props) => {
   };
 
   return (
-    <div class="positioning-tab">
-      <div class="zoom-controls">
-        <div class="control-group">
-          <label>Zoom Level: {Math.round(zoomLevel() * 100)}%</label>
-          <div class="zoom-buttons">
-            <button onClick={zoomOut} class="zoom-button">-</button>
-            <button onClick={resetView} class="zoom-button">Reset</button>
-            <button onClick={zoomIn} class="zoom-button">+</button>
-          </div>
-          <input
-            type="range"
-            min="0.1"
-            max="5.0"
-            step="0.1"
-            value={zoomLevel()}
-            onInput={(e) => handleZoomChange(parseFloat(e.target.value))}
-            class="zoom-slider"
-          />
+    <div class="positioning-controls">
+      <div class="positioning-header">
+        <h3 class="section-title">View Controls</h3>
+        <p class="section-description">Zoom and pan to explore your artwork</p>
+      </div>
+      
+      <div class="control-group">
+        <label class="control-label">Zoom Level: {Math.round(zoomLevel() * 100)}%</label>
+        <div class="zoom-buttons">
+          <button onClick={zoomOut} class="control-button">-</button>
+          <button onClick={resetView} class="control-button">Reset</button>
+          <button onClick={zoomIn} class="control-button">+</button>
         </div>
+        <input
+          type="range"
+          min="0.1"
+          max="5.0"
+          step="0.1"
+          value={zoomLevel()}
+          onInput={(e) => handleZoomChange(parseFloat(e.target.value))}
+          class="control-range"
+        />
+      </div>
 
-        <div class="control-group">
-          <label>Pan X: {panX()}</label>
-          <input
-            type="range"
-            min="-500"
-            max="500"
-            step="10"
-            value={panX()}
-            onInput={(e) => handlePanXChange(parseInt(e.target.value))}
-            class="pan-slider"
-          />
-        </div>
+      <div class="control-group">
+        <label class="control-label">Pan X: {panX()}</label>
+        <input
+          type="range"
+          min="-500"
+          max="500"
+          step="10"
+          value={panX()}
+          onInput={(e) => handlePanXChange(parseInt(e.target.value))}
+          class="control-range"
+        />
+      </div>
 
-        <div class="control-group">
-          <label>Pan Y: {panY()}</label>
-          <input
-            type="range"
-            min="-500"
-            max="500"
-            step="10"
-            value={panY()}
-            onInput={(e) => handlePanYChange(parseInt(e.target.value))}
-            class="pan-slider"
-          />
-        </div>
+      <div class="control-group">
+        <label class="control-label">Pan Y: {panY()}</label>
+        <input
+          type="range"
+          min="-500"
+          max="500"
+          step="10"
+          value={panY()}
+          onInput={(e) => handlePanYChange(parseInt(e.target.value))}
+          class="control-range"
+        />
+      </div>
 
-        <div class="control-buttons">
-          <button onClick={resetView} class="action-button">Reset View</button>
-        </div>
+      <div class="control-buttons">
+        <button onClick={resetView} class="action-button">Reset View</button>
       </div>
     </div>
   );

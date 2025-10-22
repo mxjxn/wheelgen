@@ -1,6 +1,7 @@
 import { Component, createSignal, onMount, onCleanup, Show } from 'solid-js';
 import { getHybridRenderer, RenderingMode } from '../core/hybrid-renderer';
 import type p5 from 'p5';
+import '../styles/components/performance-positioning-controls.css';
 
 interface PerformanceTabProps {
   getP: () => p5 | null;
@@ -8,7 +9,6 @@ interface PerformanceTabProps {
 }
 
 export const PerformanceTab: Component<PerformanceTabProps> = (props) => {
-  console.log('PerformanceTab rendered');
   const [metrics, setMetrics] = createSignal<any>(null);
   const [renderingMode, setRenderingMode] = createSignal<RenderingMode>('auto');
   const [qualityLevel, setQualityLevel] = createSignal<'fast' | 'balanced' | 'high'>('balanced');
@@ -50,49 +50,57 @@ export const PerformanceTab: Component<PerformanceTabProps> = (props) => {
   };
 
   return (
-    <div class="performance-tab">
-      <div class="performance-controls">
-        <div class="control-group">
-          <label>Rendering Mode:</label>
-          <select
-            value={renderingMode()}
-            onChange={(e) => handleModeChange(e.target.value as RenderingMode)}
-          >
-            <option value="auto">Auto</option>
-            <option value="pixel">Pixel Only</option>
-            <option value="vector">Vector Only</option>
-            <option value="hybrid">Hybrid</option>
-          </select>
-        </div>
+    <div class="performance-controls">
+      <div class="performance-header">
+        <h3 class="section-title">Performance Monitor</h3>
+        <p class="section-description">Monitor rendering performance and configure rendering modes</p>
+      </div>
+      
+      <div class="control-group">
+        <label class="control-label">Rendering Mode:</label>
+        <select
+          value={renderingMode()}
+          onChange={(e) => handleModeChange(e.target.value as RenderingMode)}
+          class="control-select"
+        >
+          <option value="auto">Auto</option>
+          <option value="pixel">Pixel Only</option>
+          <option value="vector">Vector Only</option>
+          <option value="hybrid">Hybrid</option>
+        </select>
+      </div>
 
-        <div class="control-group">
-          <label>Quality Level:</label>
-          <select
-            value={qualityLevel()}
-            onChange={(e) => handleQualityChange(e.target.value as 'fast' | 'balanced' | 'high')}
-          >
-            <option value="fast">Fast</option>
-            <option value="balanced">Balanced</option>
-            <option value="high">High Quality</option>
-          </select>
-        </div>
+      <div class="control-group">
+        <label class="control-label">Quality Level:</label>
+        <select
+          value={qualityLevel()}
+          onChange={(e) => handleQualityChange(e.target.value as 'fast' | 'balanced' | 'high')}
+          class="control-select"
+        >
+          <option value="fast">Fast</option>
+          <option value="balanced">Balanced</option>
+          <option value="high">High Quality</option>
+        </select>
+      </div>
 
-        <div class="control-group">
-          <label>Pixel Threshold:</label>
-          <input
-            type="range"
-            min="10"
-            max="500"
-            value={pixelThreshold()}
-            onChange={(e) => handleThresholdChange(parseInt(e.target.value))}
-          />
-          <span>{pixelThreshold()}</span>
+      <div class="control-group">
+        <label class="control-label">Pixel Threshold:</label>
+        <input
+          type="range"
+          min="10"
+          max="500"
+          value={pixelThreshold()}
+          onChange={(e) => handleThresholdChange(parseInt(e.target.value))}
+          class="control-range"
+        />
+        <div class="control-description">
+          <small>{pixelThreshold()}</small>
         </div>
+      </div>
 
-        <div class="control-buttons">
-          <button onClick={resetMetrics}>Reset Metrics</button>
-          <button onClick={clearCaches}>Clear Caches</button>
-        </div>
+      <div class="control-buttons">
+        <button onClick={resetMetrics} class="control-button">Reset Metrics</button>
+        <button onClick={clearCaches} class="control-button">Clear Caches</button>
       </div>
 
       <Show when={metrics()}>

@@ -20,21 +20,17 @@ export const TabContainer: Component<TabContainerProps> = (props) => {
   const [activeTab, setActiveTab] = createSignal(props.defaultTab || props.tabs[0]?.id || '');
 
   const handleTabClick = (tabId: string) => {
-    console.log('Tab clicked:', tabId);
     setActiveTab(tabId);
   };
 
   const renderTabContent = () => {
     const currentTab = activeTab();
-    console.log('Rendering tab content for:', currentTab);
     const tab = props.tabs.find(t => t.id === currentTab);
     
     if (!tab) {
-      console.log('Tab not found:', currentTab);
       return <div>Unknown tab: {currentTab}</div>;
     }
     
-    console.log('Found tab:', tab.id, 'content:', tab.content);
     const TabComponent = tab.content;
     return <TabComponent {...tab.props} />;
   };
