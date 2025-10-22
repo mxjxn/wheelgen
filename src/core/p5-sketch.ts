@@ -30,6 +30,17 @@ export function mountSketch(container: HTMLElement) {
       p.noLoop();
       p.background(0);
       
+      // Enable right-click context menu for saving
+      const canvas = p.canvas as HTMLCanvasElement;
+      canvas.style.cursor = 'default';
+      
+      // Add context menu event listener for right-click save
+      canvas.addEventListener('contextmenu', (e) => {
+        // Allow default context menu (right-click save)
+        // The browser's native "Save image as..." will work
+        console.log('Right-click detected - use browser\'s "Save image as..." option');
+      });
+      
       // Only initialize artwork if not already done
       if (!isInitialized) {
         initializeArtworkStore(p);

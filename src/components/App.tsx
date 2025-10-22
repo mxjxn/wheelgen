@@ -10,6 +10,7 @@ import { RecoveryModal, useRecovery } from './RecoveryModal';
 import { StatusChips } from './StatusChips';
 import { TabContainer, type Tab } from './TabContainer';
 import { PerformanceMonitor } from './PerformanceMonitor';
+import { DownloadButton } from './DownloadButton';
 import { deferredRenderManager } from '../core/deferred-render';
 import type p5 from 'p5';
 import '../styles/components/status-chips.css';
@@ -17,6 +18,7 @@ import '../styles/components/tab-container.css';
 import '../styles/components/grammar-rules.css';
 import '../styles/components/app.css';
 import '../styles/components/performance-monitor.css';
+import '../styles/components/download-button.css';
 
 interface AppProps {
   p5Instance: p5;
@@ -235,6 +237,12 @@ export const App: Component<AppProps> = (props) => {
       
       {/* Performance Monitor */}
       <PerformanceMonitor />
+      
+      {/* Download Button */}
+      <DownloadButton 
+        getP={() => props.p5Instance}
+        className="download-button-fixed"
+      />
       
       {/* Recovery Modal */}
       {showRecovery && (
