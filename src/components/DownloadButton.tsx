@@ -13,6 +13,8 @@ export const DownloadButton: Component<DownloadButtonProps> = (props) => {
   const [downloadFormat, setDownloadFormat] = createSignal<'png' | 'jpeg'>('png');
   const [jpegQuality, setJpegQuality] = createSignal(0.9);
   const [customFilename, setCustomFilename] = createSignal('');
+  const [cropMode, setCropMode] = createSignal<'full' | 'square'>('full');
+  const [squareSize, setSquareSize] = createSignal(1024);
 
   const handleDownload = async (options: DownloadOptions = {}) => {
     const p = props.getP();
@@ -29,6 +31,8 @@ export const DownloadButton: Component<DownloadButtonProps> = (props) => {
         quality: downloadFormat() === 'jpeg' ? jpegQuality() : undefined,
         filename: customFilename() || undefined,
         addTimestamp: !customFilename(), // Only add timestamp if no custom filename
+        cropMode: cropMode(),
+        squareSize: cropMode() === 'square' ? squareSize() : undefined,
         ...options
       };
 
@@ -122,6 +126,66 @@ export const DownloadButton: Component<DownloadButtonProps> = (props) => {
                 </button>
               </div>
             </div>
+
+            {/* Crop mode selection */}
+            <div class="option-group">
+              <label>Crop Mode:</label>
+              <div class="format-buttons">
+                <button
+                  onClick={() => setCropMode('full')}
+                  class={`format-button ${cropMode() === 'full' ? 'active' : ''}`}
+                >
+                  Full Canvas
+                </button>
+                <button
+                  onClick={() => setCropMode('square')}
+                  class={`format-button ${cropMode() === 'square' ? 'active' : ''}`}
+                >
+                  Square Crop
+                </button>
+              </div>
+            </div>
+
+            {/* Square size selection */}
+            <Show when={cropMode() === 'square'}>
+              <div class="option-group">
+                <label>Square Size:</label>
+                <div class="format-buttons">
+                  <button
+                    onClick={() => setSquareSize(512)}
+                    class={`format-button ${squareSize() === 512 ? 'active' : ''}`}
+                  >
+                    512px
+                  </button>
+                  <button
+                    onClick={() => setSquareSize(1024)}
+                    class={`format-button ${squareSize() === 1024 ? 'active' : ''}`}
+                  >
+                    1024px
+                  </button>
+                  <button
+                    onClick={() => setSquareSize(2048)}
+                    class={`format-button ${squareSize() === 2048 ? 'active' : ''}`}
+                  >
+                    2048px
+                  </button>
+                </div>
+                <div class="format-buttons">
+                  <button
+                    onClick={() => setSquareSize(4096)}
+                    class={`format-button ${squareSize() === 4096 ? 'active' : ''}`}
+                  >
+                    4096px
+                  </button>
+                  <button
+                    onClick={() => setSquareSize(0)}
+                    class={`format-button ${squareSize() === 0 ? 'active' : ''}`}
+                  >
+                    Auto
+                  </button>
+                </div>
+              </div>
+            </Show>
 
             {/* JPEG quality slider */}
             <Show when={downloadFormat() === 'jpeg'}>

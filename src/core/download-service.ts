@@ -12,6 +12,8 @@ export interface DownloadOptions {
   quality?: number; // 0.0 to 1.0 for JPEG
   format?: 'png' | 'jpeg';
   addTimestamp?: boolean;
+  cropMode?: 'full' | 'square';
+  squareSize?: number; // Size of square crop in pixels
 }
 
 export class DownloadService {
@@ -30,7 +32,14 @@ export class DownloadService {
       const link = document.createElement('a');
       
       link.download = filename;
-      link.href = canvas.toDataURL('image/png', 1.0); // PNG is always lossless
+      
+      // Handle square crop if requested
+      if (options.cropMode === 'square') {
+        const croppedDataURL = this.createSquareCrop(canvas, options.squareSize);
+        link.href = croppedDataURL;
+      } else {
+        link.href = canvas.toDataURL('image/png', 1.0); // PNG is always lossless
+      }
       
       // Trigger download
       document.body.appendChild(link);
@@ -61,7 +70,14 @@ export class DownloadService {
       const link = document.createElement('a');
       
       link.download = filename;
-      link.href = canvas.toDataURL('image/jpeg', quality);
+      
+      // Handle square crop if requested
+      if (options.cropMode === 'square') {
+        const croppedDataURL = this.createSquareCrop(canvas, options.squareSize, 'image/jpeg', quality);
+        link.href = croppedDataURL;
+      } else {
+        link.href = canvas.toDataURL('image/jpeg', quality);
+      }
       
       // Trigger download
       document.body.appendChild(link);
@@ -166,6 +182,90 @@ export class DownloadService {
       }
     } catch (error) {
       return 'Unknown';
+    }
+  }
+
+  /**
+   * Create a square crop from the center of the artwork
+   */
+  private static createSquareCrop(
+    canvas: HTMLCanvasElement, 
+    size?: number, 
+    format: string = 'image/png', 
+    quality?: number
+  ): string {
+    try {
+      // Calculate optimal square size if not provided
+      const squareSize = size || this.calculateOptimalSquareSize(canvas);
+      
+      // Create a new canvas for the square crop
+      const cropCanvas = document.createElement('canvas');
+      const ctx = cropCanvas.getContext('2d');
+      if (!ctx) throw new Error('Could not get 2D context');
+      
+      cropCanvas.width = squareSize;
+      cropCanvas.height = squareSize;
+      
+      // Calculate center point
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const halfSize = squareSize / 2;
+      
+      // Draw the square crop from the center
+      ctx.drawImage(
+        canvas,
+        centerX - halfSize, centerY - halfSize, squareSize, squareSize, // Source rectangle
+        0, 0, squareSize, squareSize // Destination rectangle
+      );
+      
+      // Return data URL
+      return cropCanvas.toDataURL(format, quality);
+    } catch (error) {
+      console.error('Square crop failed:', error);
+      // Fallback to full canvas
+      return canvas.toDataURL(format, quality);
+    }
+  }
+
+  /**
+   * Calculate optimal square size based on canvas dimensions
+   */
+  private static calculateOptimalSquareSize(canvas: HTMLCanvasElement): number {
+    // Use the smaller dimension to ensure the square fits
+    const minDimension = Math.min(canvas.width, canvas.height);
+    
+    // Common square sizes for social media and printing
+    const commonSizes = [512, 1024, 2048, 4096];
+    
+    // Find the largest common size that fits within the canvas
+    for (let i = commonSizes.length - 1; i >= 0; i--) {
+      if (commonSizes[i] <= minDimension) {
+        return commonSizes[i];
+      }
+    }
+    
+    // If no common size fits, use 80% of the smaller dimension
+    return Math.floor(minDimension * 0.8);
+  }
+
+  /**
+   * Get artwork bounds (useful for zoom controls)
+   */
+  static getArtworkBounds(p: p5): { centerX: number; centerY: number; maxRadius: number } | null {
+    try {
+      // This would need to be implemented based on your artwork structure
+      // For now, return canvas center as a fallback
+      const canvas = p.canvas as HTMLCanvasElement;
+      if (!canvas) return null;
+
+      return {
+        centerX: canvas.width / 2,
+        centerY: canvas.height / 2,
+        maxRadius: Math.min(canvas.width, canvas.height) / 2
+      };
+    } catch (error) {
+      console.error('Failed to get artwork bounds:', error);
+      return null;
     }
   }
 

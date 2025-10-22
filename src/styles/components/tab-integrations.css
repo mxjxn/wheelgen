@@ -1,0 +1,288 @@
+/* Tab Integration Styles */
+
+/* Performance Tab */
+.performance-tab {
+  padding: 16px;
+}
+
+.performance-tab .performance-controls {
+  margin-bottom: 20px;
+}
+
+.performance-tab .control-group {
+  margin-bottom: 16px;
+}
+
+.performance-tab .control-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #e0e0e0;
+}
+
+.performance-tab select,
+.performance-tab input[type="range"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background: #2a2a2a;
+  color: white;
+}
+
+.performance-tab .control-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.performance-tab .control-buttons button {
+  padding: 8px 16px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background: #3a3a3a;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.performance-tab .control-buttons button:hover {
+  background: #4a4a4a;
+  border-color: #666;
+}
+
+.performance-tab .performance-metrics {
+  border-top: 1px solid #444;
+  padding-top: 16px;
+}
+
+.performance-tab .metrics-section {
+  margin-bottom: 16px;
+}
+
+.performance-tab .metrics-section h4 {
+  margin: 0 0 8px 0;
+  color: #f0f0f0;
+  font-size: 14px;
+}
+
+.performance-tab .metric-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid #333;
+}
+
+.performance-tab .metric-row span:first-child {
+  color: #ccc;
+}
+
+.performance-tab .metric-row span:last-child {
+  color: #fff;
+  font-weight: 500;
+}
+
+.performance-tab .analysis {
+  margin-top: 8px;
+}
+
+.performance-tab .analysis-item {
+  padding: 8px;
+  margin: 4px 0;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.performance-tab .analysis-item.success {
+  background: rgba(76, 175, 80, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  color: #4caf50;
+}
+
+.performance-tab .analysis-item.warning {
+  background: rgba(255, 152, 0, 0.2);
+  border: 1px solid rgba(255, 152, 0, 0.3);
+  color: #ff9800;
+}
+
+/* Download Tab */
+.download-tab {
+  padding: 16px;
+}
+
+.download-tab .download-options-panel {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.download-tab .options-content {
+  padding: 0;
+}
+
+.download-tab .option-group {
+  margin-bottom: 20px;
+}
+
+.download-tab .option-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #e0e0e0;
+}
+
+.download-tab .format-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.download-tab .format-button {
+  padding: 8px 12px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background: #3a3a3a;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 12px;
+}
+
+.download-tab .format-button:hover {
+  background: #4a4a4a;
+  border-color: #666;
+}
+
+.download-tab .format-button.active {
+  background: #007acc;
+  border-color: #0099ff;
+}
+
+.download-tab input[type="range"] {
+  width: 100%;
+  margin: 8px 0;
+}
+
+.download-tab input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background: #2a2a2a;
+  color: white;
+}
+
+.download-tab .info-section {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  border-radius: 4px;
+  margin: 16px 0;
+}
+
+.download-tab .info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.download-tab .info-row span:first-child {
+  color: #ccc;
+}
+
+.download-tab .info-row span:last-child {
+  color: #fff;
+  font-weight: 500;
+}
+
+.download-tab .action-button {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #007acc;
+  border-radius: 4px;
+  background: #007acc;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.download-tab .action-button:hover:not(:disabled) {
+  background: #0099ff;
+  border-color: #0099ff;
+}
+
+.download-tab .action-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Positioning Tab */
+.positioning-tab {
+  padding: 16px;
+}
+
+.positioning-tab .zoom-controls {
+  padding: 0;
+}
+
+.positioning-tab .control-group {
+  margin-bottom: 20px;
+}
+
+.positioning-tab .control-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #e0e0e0;
+}
+
+.positioning-tab .zoom-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.positioning-tab .zoom-button {
+  padding: 8px 16px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background: #3a3a3a;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: bold;
+}
+
+.positioning-tab .zoom-button:hover {
+  background: #4a4a4a;
+  border-color: #666;
+}
+
+.positioning-tab .zoom-slider,
+.positioning-tab .pan-slider {
+  width: 100%;
+  margin: 8px 0;
+}
+
+.positioning-tab .control-buttons {
+  margin-top: 20px;
+}
+
+.positioning-tab .action-button {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #007acc;
+  border-radius: 4px;
+  background: #007acc;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.positioning-tab .action-button:hover {
+  background: #0099ff;
+  border-color: #0099ff;
+}

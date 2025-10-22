@@ -9,8 +9,9 @@ import { GrammarRules } from './GrammarRules';
 import { RecoveryModal, useRecovery } from './RecoveryModal';
 import { StatusChips } from './StatusChips';
 import { TabContainer, type Tab } from './TabContainer';
-import { PerformanceMonitor } from './PerformanceMonitor';
-import { DownloadButton } from './DownloadButton';
+import { PerformanceTab } from './PerformanceTab';
+import { DownloadTab } from './DownloadTab';
+import { PositioningTab } from './PositioningTab';
 import { deferredRenderManager } from '../core/deferred-render';
 import type p5 from 'p5';
 import '../styles/components/status-chips.css';
@@ -19,6 +20,8 @@ import '../styles/components/grammar-rules.css';
 import '../styles/components/app.css';
 import '../styles/components/performance-monitor.css';
 import '../styles/components/download-button.css';
+import '../styles/components/zoom-controls.css';
+import '../styles/components/tab-integrations.css';
 
 interface AppProps {
   p5Instance: p5;
@@ -216,6 +219,51 @@ export const App: Component<AppProps> = (props) => {
                     },
                     requestRedraw: handleRequestRedraw
                   }
+                },
+                {
+                  id: 'performance',
+                  label: 'Performance',
+                  icon: '📊',
+                  content: PerformanceTab,
+                  props: {
+                    getP: () => {
+                      if (!props.p5Instance) {
+                        return null;
+                      }
+                      return props.p5Instance;
+                    },
+                    requestRedraw: handleRequestRedraw
+                  }
+                },
+                {
+                  id: 'download',
+                  label: 'Download',
+                  icon: '💾',
+                  content: DownloadTab,
+                  props: {
+                    getP: () => {
+                      if (!props.p5Instance) {
+                        return null;
+                      }
+                      return props.p5Instance;
+                    },
+                    requestRedraw: handleRequestRedraw
+                  }
+                },
+                {
+                  id: 'positioning',
+                  label: 'Positioning',
+                  icon: '🔍',
+                  content: PositioningTab,
+                  props: {
+                    getP: () => {
+                      if (!props.p5Instance) {
+                        return null;
+                      }
+                      return props.p5Instance;
+                    },
+                    requestRedraw: handleRequestRedraw
+                  }
                 }
               ]}
               defaultTab="rings"
@@ -234,15 +282,6 @@ export const App: Component<AppProps> = (props) => {
           {showOverlay() ? '🎨' : '⚙️'}
         </span>
       </button>
-      
-      {/* Performance Monitor */}
-      <PerformanceMonitor />
-      
-      {/* Download Button */}
-      <DownloadButton 
-        getP={() => props.p5Instance}
-        className="download-button-fixed"
-      />
       
       {/* Recovery Modal */}
       {showRecovery && (
