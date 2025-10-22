@@ -1,7 +1,7 @@
 /* Performance Monitor Styles */
 .performance-monitor-toggle {
   position: fixed;
-  top: 20px;
+  top: 80px; /* Position below the control panel button */
   right: 20px;
   z-index: 1000;
   background: rgba(0, 0, 0, 0.8);
@@ -25,16 +25,16 @@
 
 .performance-monitor {
   position: fixed;
-  top: 20px;
+  top: 80px; /* Position below the control panel button */
   right: 20px;
-  z-index: 1000;
+  z-index: 999; /* Lower than control panel to avoid conflicts */
   background: rgba(0, 0, 0, 0.95);
   color: white;
   border-radius: 8px;
   padding: 16px;
   min-width: 300px;
   max-width: 400px;
-  max-height: 80vh;
+  max-height: calc(80vh - 100px); /* Account for control panel height */
   overflow-y: auto;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
   font-size: 12px;
@@ -212,15 +212,16 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .performance-monitor {
-    top: 10px;
+    top: 80px; /* Keep below control panel on mobile too */
     right: 10px;
     left: 10px;
     min-width: auto;
     max-width: none;
+    max-height: calc(80vh - 100px);
   }
   
   .performance-monitor-toggle {
-    top: 10px;
+    top: 80px; /* Keep below control panel on mobile too */
     right: 10px;
   }
 }
