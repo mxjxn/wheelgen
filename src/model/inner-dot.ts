@@ -7,6 +7,8 @@ export interface InnerDotState {
   color2Index: number;
   gradientStop: number; // 0..1
   maxRadius: number;
+  color1Opacity: number; // 0..255
+  color2Opacity: number; // 0..255
 }
 
 export function drawInnerDot(p: p5, palette: p5.Color[], innerDot: InnerDotState, progress = 1.0) {
@@ -24,21 +26,40 @@ export function drawInnerDot(p: p5, palette: p5.Color[], innerDot: InnerDotState
     const t = i / (numSteps - 1);
     const currentRadius = p.map(i, 0, numSteps - 1, 0, innerDot.radius);
 
+    // Create a smooth radial gradient
+    // gradientStop controls where the transition from color1 to color2 happens
     let currentColor: p5.Color;
-    if (t <= innerDot.gradientStop) {
-      const localT = innerDot.gradientStop === 0 ? 1 : t / innerDot.gradientStop;
-      currentColor = p.lerpColor(color1, color2, localT) as p5.Color;
-    } else {
+    let currentOpacity: number;
+    
+    if (innerDot.gradientStop === 0) {
+      // If gradient stop is 0, use only color2
       currentColor = color2;
+      currentOpacity = innerDot.color2Opacity;
+    } else if (innerDot.gradientStop === 1) {
+      // If gradient stop is 1, use only color1
+      currentColor = color1;
+      currentOpacity = innerDot.color1Opacity;
+    } else {
+      // Create gradient: color1 at center (t=0) to color2 at gradientStop
+      // Then color2 from gradientStop to edge (t=1)
+      if (t <= innerDot.gradientStop) {
+        // Interpolate from color1 to color2
+        const localT = t / innerDot.gradientStop;
+        currentColor = p.lerpColor(color1, color2, localT) as p5.Color;
+        // Interpolate opacity as well
+        currentOpacity = p.map(localT, 0, 1, innerDot.color1Opacity, innerDot.color2Opacity);
+      } else {
+        // Use color2 for the outer portion
+        currentColor = color2;
+        currentOpacity = innerDot.color2Opacity;
+      }
     }
-
-    const opacity = 6; // ~5% of 255
 
     p.colorMode(p.RGB, 255);
     const r = p.red(currentColor);
     const g = p.green(currentColor);
     const b = p.blue(currentColor);
-    p.fill(r, g, b, opacity);
+    p.fill(r, g, b, currentOpacity);
 
     p.ellipse(0, 0, currentRadius * 2, currentRadius * 2);
   }

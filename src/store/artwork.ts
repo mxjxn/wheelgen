@@ -21,6 +21,8 @@ export interface InnerDotState {
   color2Index: number;
   gradientStop: number; // 0..1
   maxRadius: number;
+  color1Opacity: number; // 0..255
+  color2Opacity: number; // 0..255
 }
 
 export interface ColorAssignmentState {
@@ -66,6 +68,8 @@ export const [innerDot, setInnerDot] = createSignal<InnerDotState>({
   color2Index: 1,
   gradientStop: 0.5,
   maxRadius: 0,
+  color1Opacity: 180,
+  color2Opacity: 180,
 });
 export const [globals, setGlobals] = createSignal<GlobalsState>({
   randomness: 0.0,
@@ -445,6 +449,8 @@ export const initializeArtwork = (p: p5) => {
     color2Index: Math.floor(p.random(4)),
     gradientStop: p.random(0.3, 0.7),
     maxRadius: innermostRing.radius,
+    color1Opacity: p.random(100, 255),
+    color2Opacity: p.random(100, 255),
   });
 };
 

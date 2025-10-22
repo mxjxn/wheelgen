@@ -21,6 +21,8 @@ export const CenterDotControls: Component<CenterDotControlsProps> = (props) => {
   const [innerDotColor2Index, setInnerDotColor2Index] = createSignal(innerDot().color2Index);
   const [innerDotGradientStop, setInnerDotGradientStop] = createSignal(innerDot().gradientStop);
   const [innerDotMaxRadius, setInnerDotMaxRadius] = createSignal(innerDot().maxRadius);
+  const [innerDotColor1Opacity, setInnerDotColor1Opacity] = createSignal(innerDot().color1Opacity);
+  const [innerDotColor2Opacity, setInnerDotColor2Opacity] = createSignal(innerDot().color2Opacity);
 
   // Update local signals when store changes
   createEffect(() => {
@@ -31,6 +33,8 @@ export const CenterDotControls: Component<CenterDotControlsProps> = (props) => {
     setInnerDotColor2Index(currentInnerDot.color2Index);
     setInnerDotGradientStop(currentInnerDot.gradientStop);
     setInnerDotMaxRadius(currentInnerDot.maxRadius);
+    setInnerDotColor1Opacity(currentInnerDot.color1Opacity);
+    setInnerDotColor2Opacity(currentInnerDot.color2Opacity);
   });
 
   return (
@@ -112,7 +116,7 @@ export const CenterDotControls: Component<CenterDotControlsProps> = (props) => {
 
           {/* Color 1 Index */}
           <div class="control-section">
-            <label class="control-label">Color 1 Index</label>
+            <label class="control-label">Center Color</label>
             <input
               type="range"
               min="0"
@@ -129,13 +133,13 @@ export const CenterDotControls: Component<CenterDotControlsProps> = (props) => {
               class="control-range"
             />
             <div class="control-description">
-              <small>Palette Color {innerDotColor1Index()}</small>
+              <small>Palette Color {innerDotColor1Index() + 1}</small>
             </div>
           </div>
 
           {/* Color 2 Index */}
           <div class="control-section">
-            <label class="control-label">Color 2 Index</label>
+            <label class="control-label">Edge Color</label>
             <input
               type="range"
               min="0"
@@ -152,13 +156,13 @@ export const CenterDotControls: Component<CenterDotControlsProps> = (props) => {
               class="control-range"
             />
             <div class="control-description">
-              <small>Palette Color {innerDotColor2Index()}</small>
+              <small>Palette Color {innerDotColor2Index() + 1}</small>
             </div>
           </div>
 
-          {/* Gradient Stop */}
+          {/* Gradient Midway Point */}
           <div class="control-section">
-            <label class="control-label">Gradient Stop</label>
+            <label class="control-label">Gradient Midway Point</label>
             <input
               type="range"
               min="0"
@@ -175,7 +179,53 @@ export const CenterDotControls: Component<CenterDotControlsProps> = (props) => {
               class="control-range"
             />
             <div class="control-description">
-              <small>{(innerDotGradientStop() * 100).toFixed(0)}%</small>
+              <small>Transition at {(innerDotGradientStop() * 100).toFixed(0)}% from center</small>
+            </div>
+          </div>
+
+          {/* Center Color Opacity */}
+          <div class="control-section">
+            <label class="control-label">Center Color Opacity</label>
+            <input
+              type="range"
+              min="0"
+              max="255"
+              step="1"
+              value={innerDotColor1Opacity()}
+              onInput={(e) => {
+                const value = parseInt(e.target.value);
+                setInnerDotColor1Opacity(value);
+                setInnerDot({ ...innerDot(), color1Opacity: value });
+                setHasChanges(true);
+                props.requestRedraw();
+              }}
+              class="control-range"
+            />
+            <div class="control-description">
+              <small>{Math.round((innerDotColor1Opacity() / 255) * 100)}% opacity</small>
+            </div>
+          </div>
+
+          {/* Edge Color Opacity */}
+          <div class="control-section">
+            <label class="control-label">Edge Color Opacity</label>
+            <input
+              type="range"
+              min="0"
+              max="255"
+              step="1"
+              value={innerDotColor2Opacity()}
+              onInput={(e) => {
+                const value = parseInt(e.target.value);
+                setInnerDotColor2Opacity(value);
+                setInnerDot({ ...innerDot(), color2Opacity: value });
+                setHasChanges(true);
+                props.requestRedraw();
+              }}
+              class="control-range"
+            />
+            <div class="control-description">
+              <small>{Math.round((innerDotColor2Opacity() / 255) * 100)}% opacity</small>
             </div>
           </div>
         </>
