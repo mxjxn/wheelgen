@@ -69,7 +69,7 @@ export const [innerDot, setInnerDot] = createSignal<InnerDotState>({
   gradientStop: 0.5,
   maxRadius: 0,
   color1Opacity: 180,
-  color2Opacity: 180,
+  color2Opacity: 0,
 });
 export const [globals, setGlobals] = createSignal<GlobalsState>({
   randomness: 0.0,
