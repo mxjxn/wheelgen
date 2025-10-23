@@ -1,4 +1,10 @@
+import { Parser } from './parser';
+import { PatternExpander, patternToGrammarString } from './expander';
+import { DocumentParser } from './document-parser';
+import { patternCompiler } from './pattern-compiler';
 import type { ParseResult, DocumentParseResult } from './types';
+export { Parser, PatternExpander, patternToGrammarString, DocumentParser, patternCompiler };
+export type { PatternNode, DocumentAST, Token, TokenType } from './types';
 export declare function parsePattern(input: string): ParseResult;
 export declare function parseDocument(input: string): DocumentParseResult;
 export declare const COMMANDS: readonly [{

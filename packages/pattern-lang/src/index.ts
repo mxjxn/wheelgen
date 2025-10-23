@@ -1,8 +1,12 @@
 import { Parser } from './parser';
-import { PatternExpander } from './expander';
+import { PatternExpander, patternToGrammarString } from './expander';
 import { DocumentParser } from './document-parser';
+import { patternCompiler } from './pattern-compiler';
 import type { ParseResult, DocumentParseResult } from './types';
 import type { GrammarItem } from '@wheelgen/types';
+
+export { Parser, PatternExpander, patternToGrammarString, DocumentParser, patternCompiler };
+export type { PatternNode, DocumentAST, Token, TokenType } from './types';
 
 export function parsePattern(input: string): ParseResult {
   const parser = new Parser(input);

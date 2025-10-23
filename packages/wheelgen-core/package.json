@@ -1,0 +1,22 @@
+{
+  "name": "@wheelgen/core",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@wheelgen/types": "workspace:*",
+    "@pattern-lang/core": "workspace:*",
+    "p5": "^2.0.4"
+  },
+  "devDependencies": {
+    "@types/p5": "^1.7.6",
+    "typescript": "^5.5.0"
+  }
+}

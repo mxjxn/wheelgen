@@ -5,18 +5,20 @@ import { ActionsControls } from './ActionsControls';
 import { ColorManagementPanel } from './ColorManagementPanel';
 import { CenterDotControls } from './CenterDotControls';
 import { SaveControls } from './SaveControls';
-import { GrammarRules } from './GrammarRules';
+import { GrammarTab } from './GrammarTab';
 import { RecoveryModal, useRecovery } from './RecoveryModal';
 import { StatusChips } from './StatusChips';
 import { TabContainer, type Tab } from './TabContainer';
 import { AdvancedTab } from './AdvancedTab';
+import { AdvancedEditor } from './AdvancedEditor';
 import { DownloadTab } from './DownloadTab';
 import { PositioningTab } from './PositioningTab';
 import { deferredRenderManager } from '../core/deferred-render';
 import type p5 from 'p5';
 import '../styles/components/status-chips.css';
 import '../styles/components/tab-container.css';
-import '../styles/components/grammar-rules.css';
+import '../styles/components/grammar-tab.css';
+import '../styles/components/fullscreen-editor.css';
 import '../styles/components/app.css';
 import '../styles/components/performance-monitor.css';
 import '../styles/components/download-button.css';
@@ -33,6 +35,7 @@ export const App: Component<AppProps> = (props) => {
   
   // UI state management
   const [showOverlay, setShowOverlay] = createSignal(false);
+  const [showAdvancedEditor, setShowAdvancedEditor] = createSignal(false);
   const [scrollY, setScrollY] = createSignal(0);
   
 
@@ -200,6 +203,21 @@ export const App: Component<AppProps> = (props) => {
                   }
                 },
                 {
+                  id: 'grammar',
+                  label: 'Grammar',
+                  icon: '📚',
+                  content: GrammarTab,
+                  props: {
+                    getP: () => {
+                      if (!props.p5Instance) {
+                        return null;
+                      }
+                      return props.p5Instance;
+                    },
+                    requestRedraw: handleRequestRedraw
+                  }
+                },
+                {
                   id: 'positioning',
                   label: 'Positioning',
                   icon: '🔍',
@@ -266,16 +284,28 @@ export const App: Component<AppProps> = (props) => {
         </div>
       </Show>
       
-      {/* Floating toggle button */}
-      <button 
-        class={`overlay-toggle ${showOverlay() ? 'overlay-open' : 'overlay-closed'}`}
-        onClick={toggleOverlay}
-        title={showOverlay() ? 'Hide controls' : 'Show controls (scroll down)'}
-      >
-        <span class="toggle-icon">
-          {showOverlay() ? '🎨' : '⚙️'}
-        </span>
-      </button>
+      {/* Floating control buttons */}
+      <div class="floating-controls">
+        <button 
+          class={`overlay-toggle ${showOverlay() ? 'overlay-open' : 'overlay-closed'}`}
+          onClick={toggleOverlay}
+          title={showOverlay() ? 'Hide controls' : 'Show controls (scroll down)'}
+        >
+          <span class="toggle-icon">
+            {showOverlay() ? '🎨' : '⚙️'}
+          </span>
+        </button>
+        
+        <button 
+          class={`text-editor-toggle ${showAdvancedEditor() ? 'editor-open' : 'editor-closed'}`}
+          onClick={() => setShowAdvancedEditor(!showAdvancedEditor())}
+          title={showAdvancedEditor() ? 'Close text editor' : 'Open text editor'}
+        >
+          <span class="toggle-icon">
+            📝
+          </span>
+        </button>
+      </div>
       
       {/* Recovery Modal */}
       {showRecovery && (
@@ -284,6 +314,15 @@ export const App: Component<AppProps> = (props) => {
           onClose={closeRecovery}
         />
       )}
+      
+      {/* Advanced Editor */}
+      <Show when={showAdvancedEditor()}>
+        <AdvancedEditor 
+          p5Instance={props.p5Instance}
+          requestRedraw={handleRequestRedraw}
+          onClose={() => setShowAdvancedEditor(false)}
+        />
+      </Show>
     </div>
   );
 };

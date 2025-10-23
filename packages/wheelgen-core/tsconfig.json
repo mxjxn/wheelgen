@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "declaration": true,
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "strict": true,
+    "skipLibCheck": true,
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@wheelgen/types": ["../wheelgen-types/src"],
+      "@pattern-lang/core": ["../pattern-lang/src"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["lib", "node_modules"],
+  "references": [
+    { "path": "../wheelgen-types" },
+    { "path": "../pattern-lang" }
+  ]
+}

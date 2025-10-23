@@ -239,10 +239,11 @@ export const AdvancedTab: Component<AdvancedTabProps> = (props) => {
         <AdvancedEditor
           onClose={() => setShowAdvancedEditor(false)}
           onApply={(document) => {
-            // TODO: Apply document to artwork
-            console.log('Apply document:', document);
+            console.log('Document applied:', document);
             setShowAdvancedEditor(false);
+            props.requestRedraw();
           }}
+          p5Instance={props.getP()}
         />
       </Show>
 

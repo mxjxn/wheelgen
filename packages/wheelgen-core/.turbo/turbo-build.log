@@ -1,0 +1,37 @@
+
+> @wheelgen/core@1.0.0 build /Users/maxjackson/MuseStudio/art/wheelgen/packages/wheelgen-core
+> tsc
+
+src/core/alphabet/pixel-alphabet.ts(2,54): error TS2307: Cannot find module './pixel-renderer' or its corresponding type declarations.
+src/core/color-diagnostic.ts(2,34): error TS2307: Cannot find module '../store/artwork' or its corresponding type declarations.
+src/core/color-diagnostic.ts(30,29): error TS7006: Parameter 'color' implicitly has an 'any' type.
+src/core/color-diagnostic.ts(30,36): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/core/color-diagnostic.ts(264,27): error TS7006: Parameter 'originalColor' implicitly has an 'any' type.
+src/core/color-diagnostic.ts(264,42): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/core/color-diagnostic.ts(313,10): error TS2307: Cannot find module '../store/saveSlots' or its corresponding type declarations.
+src/core/color-diagnostic.ts(339,31): error TS7006: Parameter 'originalColor' implicitly has an 'any' type.
+src/core/color-diagnostic.ts(339,46): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/core/deferred-render.ts(75,5): error TS2322: Type 'Timeout' is not assignable to type 'number'.
+src/core/download-service.ts(25,24): error TS2551: Property 'canvas' does not exist on type 'import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")'. Did you mean 'noCanvas'?
+src/core/download-service.ts(62,24): error TS2551: Property 'canvas' does not exist on type 'import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")'. Did you mean 'noCanvas'?
+src/core/download-service.ts(132,24): error TS2551: Property 'canvas' does not exist on type 'import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")'. Did you mean 'noCanvas'?
+src/core/download-service.ts(165,24): error TS2551: Property 'canvas' does not exist on type 'import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")'. Did you mean 'noCanvas'?
+src/core/download-service.ts(255,24): error TS2551: Property 'canvas' does not exist on type 'import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")'. Did you mean 'noCanvas'?
+src/core/download-service.ts(273,18): error TS2551: Property 'canvas' does not exist on type 'import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")'. Did you mean 'noCanvas'?
+src/core/download-service.ts(275,22): error TS2551: Property 'canvas' does not exist on type 'import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")'. Did you mean 'noCanvas'?
+src/core/hybrid-renderer.ts(97,16): error TS18048: 'options.strokeCount' is possibly 'undefined'.
+src/core/hybrid-renderer.ts(98,16): error TS18048: 'options.colorBleed' is possibly 'undefined'.
+src/core/hybrid-renderer.ts(116,16): error TS18048: 'options.strokeCount' is possibly 'undefined'.
+src/core/hybrid-renderer.ts(116,43): error TS18048: 'options.colorBleed' is possibly 'undefined'.
+src/core/p5-sketch.ts(10,8): error TS2307: Cannot find module '../store/artwork' or its corresponding type declarations.
+src/core/p5-sketch.ts(34,24): error TS2551: Property 'canvas' does not exist on type 'import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")'. Did you mean 'noCanvas'?
+src/core/pixel-renderer.ts(106,7): error TS2740: Type '__Graphics__ & import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")' is missing the following properties from type 'Image': resize, mask, getCurrentFrame, setFrame, and 4 more.
+src/core/pixel-renderer.ts(412,36): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/index.ts(4,1): error TS2308: Module './model/particle' has already exported a member named 'Particle'. Consider explicitly re-exporting to resolve the ambiguity.
+src/index.ts(4,1): error TS2308: Module './model/particle' has already exported a member named 'clearLoggedGrammars'. Consider explicitly re-exporting to resolve the ambiguity.
+src/index.ts(4,1): error TS2308: Module './model/particle' has already exported a member named 'logRingStrokeData'. Consider explicitly re-exporting to resolve the ambiguity.
+src/model/hybrid-particle.ts(3,62): error TS2307: Cannot find module '../store/artwork' or its corresponding type declarations.
+src/model/particle.ts(3,62): error TS2307: Cannot find module '../store/artwork' or its corresponding type declarations.
+src/model/ring.ts(7,25): error TS2307: Cannot find module '../store/artwork' or its corresponding type declarations.
+ ELIFECYCLE  Command failed with exit code 2.

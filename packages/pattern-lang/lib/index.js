@@ -1,6 +1,8 @@
-import { Parser } from './parser.js';
-import { PatternExpander } from './expander.js';
-import { DocumentParser } from './document-parser.js';
+import { Parser } from './parser';
+import { PatternExpander, patternToGrammarString } from './expander';
+import { DocumentParser } from './document-parser';
+import { patternCompiler } from './pattern-compiler';
+export { Parser, PatternExpander, patternToGrammarString, DocumentParser, patternCompiler };
 export function parsePattern(input) {
     const parser = new Parser(input);
     const parseResult = parser.parse();

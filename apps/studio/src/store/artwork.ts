@@ -5,7 +5,7 @@ import { generatePalette, logPaletteColors } from '../core/color';
 import { defaultGrammars } from '../core/constants';
 import { clearLoggedGrammars, logRingStrokeData } from '../model/particle';
 import { autosaveService } from './autosave';
-import { parsePattern, isPatternLanguage } from '@pattern-lang/core';
+import { parsePattern, isPatternLanguage, parseDocument, patternToGrammarString, patternCompiler, type DocumentAST } from '@pattern-lang/core';
 import { parseGrammar } from '../core/grammar';
 
 // Types
@@ -487,6 +487,98 @@ export const initializeArtwork = (p: p5) => {
     color1Opacity: p.random(100, 255),
     color2Opacity: p.random(100, 255),
   });
+};
+
+// Apply document AST to artwork state
+export const applyDocument = (documentString: string, p: p5): { success: boolean; error?: string } => {
+  const result = parseDocument(documentString);
+  
+  if (!result.success) {
+    return { success: false, error: result.error?.message || 'Parse error' };
+  }
+  
+  const ast = result.ast!;
+  const currentRings = rings();
+  
+  // Apply rings from document
+  if (ast.rings && ast.rings.length > 0) {
+    ast.rings.forEach((ringDef, index) => {
+      if (index < currentRings.length) {
+        const ring = currentRings[index];
+        ring.radius = ringDef.radius;
+        ring.visible = true;
+        // Convert PatternNode to grammar string for document format
+        const documentGrammarString = patternToGrammarString(ringDef.pattern);
+        
+        // Compile down to basic character sequence for controls UI
+        const compiledPattern = patternCompiler.compilePattern(ringDef.pattern);
+        
+        // Use compiled pattern for ring (controls UI expects basic sequences)
+        ring.setPattern(p, compiledPattern);
+      }
+    });
+    
+    // Hide rings not defined in document
+    for (let i = ast.rings.length; i < currentRings.length; i++) {
+      currentRings[i].visible = false;
+    }
+    
+    setRingsOriginal([...currentRings]); // Trigger reactivity
+  }
+  
+  // Apply dot properties
+  if (ast.dot) {
+    setInnerDot({
+      ...innerDot(),
+      radius: ast.dot.size || innerDot().radius,
+      visible: ast.dot.visible ?? innerDot().visible,
+    });
+  }
+  
+  // TODO: Apply palette when color system is ready
+  
+  setHasChanges(true);
+  return { success: true };
+};
+
+// Export current artwork state to document format
+export const exportToDocument = (): string => {
+  const currentRings = rings();
+  const currentDot = innerDot();
+  const currentPalette = palette();
+  
+  // Build rings section
+  let doc = 'rings:\n';
+  currentRings.forEach(ring => {
+    if (ring.visible && ring.grammarString) {
+      // Handle special cases
+      let patternString = ring.grammarString;
+      
+      if (ring.grammarString === '-') {
+        // Solid ring - don't add $ prefix
+        patternString = '-';
+      } else if (!ring.grammarString.startsWith('$')) {
+        // Regular pattern sequence - add $ prefix
+        patternString = `$${ring.grammarString}`;
+      }
+      // If it already starts with $, keep it as is
+      
+      doc += `O(${ring.radius.toFixed(1)}, ${ring.particles?.length || 0}): ${patternString}\n`;
+    }
+  });
+  
+  // Build dot section
+  doc += '\ndot:\n';
+  doc += `size: ${currentDot.radius}\n`;
+  doc += `visible: ${currentDot.visible}\n`;
+  
+  // TODO: Add palette section when color system is implemented
+  // doc += '\npalette:\n';
+  // currentPalette.forEach((color, i) => {
+  //   doc += `${String.fromCharCode(65 + i)} = rgb(...)\n`;
+  // });
+  
+  return doc;
 };
 
 // Randomize function

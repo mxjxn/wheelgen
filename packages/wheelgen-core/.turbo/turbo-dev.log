@@ -1,0 +1,209 @@
+
+> @wheelgen/core@1.0.0 dev /Users/maxjackson/MuseStudio/art/wheelgen/packages/wheelgen-core
+> tsc --watch
+
+[2J[3J[H[[90m1:27:44 AM[0m] Starting compilation in watch mode...
+
+[96msrc/core/alphabet/pixel-alphabet.ts[0m:[93m2[0m:[93m54[0m - [91merror[0m[90m TS2307: [0mCannot find module './pixel-renderer' or its corresponding type declarations.
+
+[7m2[0m import { getPixelRenderer, PixelStrokeOptions } from './pixel-renderer';
+[7m [0m [91m                                                     ~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/core/color-diagnostic.ts[0m:[93m2[0m:[93m34[0m - [91merror[0m[90m TS2307: [0mCannot find module '../store/artwork' or its corresponding type declarations.
+
+[7m2[0m import { palette, globals } from '../store/artwork';
+[7m [0m [91m                                 ~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/core/color-diagnostic.ts[0m:[93m30[0m:[93m29[0m - [91merror[0m[90m TS7006: [0mParameter 'color' implicitly has an 'any' type.
+
+[7m30[0m     currentPalette.forEach((color, index) => {
+[7m  [0m [91m                            ~~~~~[0m
+
+[96msrc/core/color-diagnostic.ts[0m:[93m30[0m:[93m36[0m - [91merror[0m[90m TS7006: [0mParameter 'index' implicitly has an 'any' type.
+
+[7m30[0m     currentPalette.forEach((color, index) => {
+[7m  [0m [91m                                   ~~~~~[0m
+
+[96msrc/core/color-diagnostic.ts[0m:[93m264[0m:[93m27[0m - [91merror[0m[90m TS7006: [0mParameter 'originalColor' implicitly has an 'any' type.
+
+[7m264[0m   currentPalette.forEach((originalColor, index) => {
+[7m   [0m [91m                          ~~~~~~~~~~~~~[0m
+
+[96msrc/core/color-diagnostic.ts[0m:[93m264[0m:[93m42[0m - [91merror[0m[90m TS7006: [0mParameter 'index' implicitly has an 'any' type.
+
+[7m264[0m   currentPalette.forEach((originalColor, index) => {
+[7m   [0m [91m                                         ~~~~~[0m
+
+[96msrc/core/color-diagnostic.ts[0m:[93m313[0m:[93m10[0m - [91merror[0m[90m TS2307: [0mCannot find module '../store/saveSlots' or its corresponding type declarations.
+
+[7m313[0m   import('../store/saveSlots').then(({ saveSlotService }) => {
+[7m   [0m [91m         ~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/core/color-diagnostic.ts[0m:[93m339[0m:[93m31[0m - [91merror[0m[90m TS7006: [0mParameter 'originalColor' implicitly has an 'any' type.
+
+[7m339[0m       currentPalette.forEach((originalColor, index) => {
+[7m   [0m [91m                              ~~~~~~~~~~~~~[0m
+
+[96msrc/core/color-diagnostic.ts[0m:[93m339[0m:[93m46[0m - [91merror[0m[90m TS7006: [0mParameter 'index' implicitly has an 'any' type.
+
+[7m339[0m       currentPalette.forEach((originalColor, index) => {
+[7m   [0m [91m                                             ~~~~~[0m
+
+[96msrc/core/deferred-render.ts[0m:[93m75[0m:[93m5[0m - [91merror[0m[90m TS2322: [0mType 'Timeout' is not assignable to type 'number'.
+
+[7m75[0m     this.timeout = setTimeout(() => {
+[7m  [0m [91m    ~~~~~~~~~~~~[0m
+
+[96msrc/core/download-service.ts[0m:[93m25[0m:[93m24[0m - [91merror[0m[90m TS2551: [0mProperty 'canvas' does not exist on type 'import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")'. Did you mean 'noCanvas'?
+
+[7m25[0m       const canvas = p.canvas as HTMLCanvasElement;
+[7m  [0m [91m                       ~~~~~~[0m
+
+  [96m../../node_modules/@types/p5/src/core/rendering.d.ts[0m:[93m106[0m:[93m9[0m
+    [7m106[0m         noCanvas(): void;
+    [7m   [0m [96m        ~~~~~~~~~~~~~~~~~[0m
+    'noCanvas' is declared here.
+
+[96msrc/core/download-service.ts[0m:[93m62[0m:[93m24[0m - [91merror[0m[90m TS2551: [0mProperty 'canvas' does not exist on type 'import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")'. Did you mean 'noCanvas'?
+
+[7m62[0m       const canvas = p.canvas as HTMLCanvasElement;
+[7m  [0m [91m                       ~~~~~~[0m
+
+  [96m../../node_modules/@types/p5/src/core/rendering.d.ts[0m:[93m106[0m:[93m9[0m
+    [7m106[0m         noCanvas(): void;
+    [7m   [0m [96m        ~~~~~~~~~~~~~~~~~[0m
+    'noCanvas' is declared here.
+
+[96msrc/core/download-service.ts[0m:[93m132[0m:[93m24[0m - [91merror[0m[90m TS2551: [0mProperty 'canvas' does not exist on type 'import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")'. Did you mean 'noCanvas'?
+
+[7m132[0m       const canvas = p.canvas as HTMLCanvasElement;
+[7m   [0m [91m                       ~~~~~~[0m
+
+  [96m../../node_modules/@types/p5/src/core/rendering.d.ts[0m:[93m106[0m:[93m9[0m
+    [7m106[0m         noCanvas(): void;
+    [7m   [0m [96m        ~~~~~~~~~~~~~~~~~[0m
+    'noCanvas' is declared here.
+
+[96msrc/core/download-service.ts[0m:[93m165[0m:[93m24[0m - [91merror[0m[90m TS2551: [0mProperty 'canvas' does not exist on type 'import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")'. Did you mean 'noCanvas'?
+
+[7m165[0m       const canvas = p.canvas as HTMLCanvasElement;
+[7m   [0m [91m                       ~~~~~~[0m
+
+  [96m../../node_modules/@types/p5/src/core/rendering.d.ts[0m:[93m106[0m:[93m9[0m
+    [7m106[0m         noCanvas(): void;
+    [7m   [0m [96m        ~~~~~~~~~~~~~~~~~[0m
+    'noCanvas' is declared here.
+
+[96msrc/core/download-service.ts[0m:[93m255[0m:[93m24[0m - [91merror[0m[90m TS2551: [0mProperty 'canvas' does not exist on type 'import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")'. Did you mean 'noCanvas'?
+
+[7m255[0m       const canvas = p.canvas as HTMLCanvasElement;
+[7m   [0m [91m                       ~~~~~~[0m
+
+  [96m../../node_modules/@types/p5/src/core/rendering.d.ts[0m:[93m106[0m:[93m9[0m
+    [7m106[0m         noCanvas(): void;
+    [7m   [0m [96m        ~~~~~~~~~~~~~~~~~[0m
+    'noCanvas' is declared here.
+
+[96msrc/core/download-service.ts[0m:[93m273[0m:[93m18[0m - [91merror[0m[90m TS2551: [0mProperty 'canvas' does not exist on type 'import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")'. Did you mean 'noCanvas'?
+
+[7m273[0m     if (!p || !p.canvas) return 'Unknown';
+[7m   [0m [91m                 ~~~~~~[0m
+
+  [96m../../node_modules/@types/p5/src/core/rendering.d.ts[0m:[93m106[0m:[93m9[0m
+    [7m106[0m         noCanvas(): void;
+    [7m   [0m [96m        ~~~~~~~~~~~~~~~~~[0m
+    'noCanvas' is declared here.
+
+[96msrc/core/download-service.ts[0m:[93m275[0m:[93m22[0m - [91merror[0m[90m TS2551: [0mProperty 'canvas' does not exist on type 'import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")'. Did you mean 'noCanvas'?
+
+[7m275[0m     const canvas = p.canvas as HTMLCanvasElement;
+[7m   [0m [91m                     ~~~~~~[0m
+
+  [96m../../node_modules/@types/p5/src/core/rendering.d.ts[0m:[93m106[0m:[93m9[0m
+    [7m106[0m         noCanvas(): void;
+    [7m   [0m [96m        ~~~~~~~~~~~~~~~~~[0m
+    'noCanvas' is declared here.
+
+[96msrc/core/hybrid-renderer.ts[0m:[93m97[0m:[93m16[0m - [91merror[0m[90m TS18048: [0m'options.strokeCount' is possibly 'undefined'.
+
+[7m97[0m                options.strokeCount > 5 ||
+[7m  [0m [91m               ~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/core/hybrid-renderer.ts[0m:[93m98[0m:[93m16[0m - [91merror[0m[90m TS18048: [0m'options.colorBleed' is possibly 'undefined'.
+
+[7m98[0m                options.colorBleed > 0.5;
+[7m  [0m [91m               ~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/core/hybrid-renderer.ts[0m:[93m116[0m:[93m16[0m - [91merror[0m[90m TS18048: [0m'options.strokeCount' is possibly 'undefined'.
+
+[7m116[0m         return options.strokeCount > 3 || options.colorBleed > 0.3;
+[7m   [0m [91m               ~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/core/hybrid-renderer.ts[0m:[93m116[0m:[93m43[0m - [91merror[0m[90m TS18048: [0m'options.colorBleed' is possibly 'undefined'.
+
+[7m116[0m         return options.strokeCount > 3 || options.colorBleed > 0.3;
+[7m   [0m [91m                                          ~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/core/p5-sketch.ts[0m:[93m10[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '../store/artwork' or its corresponding type declarations.
+
+[7m10[0m } from '../store/artwork';
+[7m  [0m [91m       ~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/core/p5-sketch.ts[0m:[93m34[0m:[93m24[0m - [91merror[0m[90m TS2551: [0mProperty 'canvas' does not exist on type 'import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")'. Did you mean 'noCanvas'?
+
+[7m34[0m       const canvas = p.canvas as HTMLCanvasElement;
+[7m  [0m [91m                       ~~~~~~[0m
+
+  [96m../../node_modules/@types/p5/src/core/rendering.d.ts[0m:[93m106[0m:[93m9[0m
+    [7m106[0m         noCanvas(): void;
+    [7m   [0m [96m        ~~~~~~~~~~~~~~~~~[0m
+    'noCanvas' is declared here.
+
+[96msrc/core/pixel-renderer.ts[0m:[93m106[0m:[93m7[0m - [91merror[0m[90m TS2740: [0mType '__Graphics__ & import("/Users/maxjackson/MuseStudio/art/wheelgen/node_modules/@types/p5/index.d.ts")' is missing the following properties from type 'Image': resize, mask, getCurrentFrame, setFrame, and 4 more.
+
+[7m106[0m       image: buffer,
+[7m   [0m [91m      ~~~~~[0m
+
+  [96msrc/core/pixel-renderer.ts[0m:[93m34[0m:[93m3[0m
+    [7m34[0m   image: p5.Image;
+    [7m  [0m [96m  ~~~~~[0m
+    The expected type comes from property 'image' which is declared here on type 'StrokeTexture'
+
+[96msrc/core/pixel-renderer.ts[0m:[93m412[0m:[93m36[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m412[0m         this.strokeTextures.delete(firstKey);
+[7m   [0m [91m                                   ~~~~~~~~[0m
+
+[96msrc/index.ts[0m:[93m4[0m:[93m1[0m - [91merror[0m[90m TS2308: [0mModule './model/particle' has already exported a member named 'Particle'. Consider explicitly re-exporting to resolve the ambiguity.
+
+[7m4[0m export * from './model/hybrid-particle';
+[7m [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/index.ts[0m:[93m4[0m:[93m1[0m - [91merror[0m[90m TS2308: [0mModule './model/particle' has already exported a member named 'clearLoggedGrammars'. Consider explicitly re-exporting to resolve the ambiguity.
+
+[7m4[0m export * from './model/hybrid-particle';
+[7m [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/index.ts[0m:[93m4[0m:[93m1[0m - [91merror[0m[90m TS2308: [0mModule './model/particle' has already exported a member named 'logRingStrokeData'. Consider explicitly re-exporting to resolve the ambiguity.
+
+[7m4[0m export * from './model/hybrid-particle';
+[7m [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/model/hybrid-particle.ts[0m:[93m3[0m:[93m62[0m - [91merror[0m[90m TS2307: [0mCannot find module '../store/artwork' or its corresponding type declarations.
+
+[7m3[0m import { globals, palette, rings, getStrokeColorIndex } from '../store/artwork';
+[7m [0m [91m                                                             ~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/model/particle.ts[0m:[93m3[0m:[93m62[0m - [91merror[0m[90m TS2307: [0mCannot find module '../store/artwork' or its corresponding type declarations.
+
+[7m3[0m import { globals, palette, rings, getStrokeColorIndex } from '../store/artwork';
+[7m [0m [91m                                                             ~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/model/ring.ts[0m:[93m7[0m:[93m25[0m - [91merror[0m[90m TS2307: [0mCannot find module '../store/artwork' or its corresponding type declarations.
+
+[7m7[0m import { globals } from '../store/artwork';
+[7m [0m [91m                        ~~~~~~~~~~~~~~~~~~[0m
+
+[[90m1:27:44 AM[0m] Found 31 errors. Watching for file changes.
+

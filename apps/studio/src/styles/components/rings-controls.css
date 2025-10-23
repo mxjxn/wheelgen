@@ -1,0 +1,731 @@
+/* New Controls Layout */
+.controls-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  height: 100%;
+}
+
+.control-section-full {
+  width: 100%;
+  background: rgba(30, 30, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 20px;
+  box-sizing: border-box;
+  /* Blur effect with fallbacks */
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  /* Fallback for browsers that don't support backdrop-filter */
+  background: rgba(30, 30, 30, 0.95);
+  /* Performance optimizations */
+  will-change: auto;
+  contain: layout style paint;
+}
+
+.rings-header {
+  margin-bottom: 20px;
+}
+
+.rings-header .section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Global Controls Compact Layout */
+.global-controls-compact {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(15, 15, 15, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  backdrop-filter: blur(2px);
+}
+
+.global-control-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.global-control-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin: 0;
+  text-align: center;
+}
+
+.global-control-range {
+  width: 100%;
+  accent-color: #888;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}
+
+.global-control-range::-webkit-slider-thumb {
+  background: #888;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 12px;
+  height: 12px;
+}
+
+.global-control-range::-webkit-slider-thumb:hover {
+  background: #aaa;
+  transform: scale(1.2);
+}
+
+.global-control-value {
+  font-size: 10px;
+  color: #fff;
+  font-weight: 600;
+  text-align: center;
+  font-family: monospace;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 4px;
+  border-radius: 3px;
+  min-width: 30px;
+}
+
+.rings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.rings-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ring-control {
+  background: rgba(20, 20, 20, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  /* Blur effect with fallbacks */
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  /* Fallback for browsers that don't support backdrop-filter */
+  background: rgba(20, 20, 20, 0.2);
+}
+
+.ring-control:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(25, 25, 25, 0.2);
+}
+
+.ring-control:last-child {
+  margin-bottom: 0;
+}
+
+/* Ring Properties */
+.ring-properties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 12px 0;
+  padding: 12px;
+  background: rgba(15, 15, 15, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+.property-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.property-row label {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.property-input {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 6px 8px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.property-input:focus {
+  outline: none;
+  border-color: rgba(33, 150, 243, 0.6);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.property-input:readonly {
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
+}
+
+/* Collapsed view */
+.ring-collapsed {
+  padding: 0;
+}
+
+.ring-collapsed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  font-weight: 600;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ring-collapsed-header:hover {
+  color: #ccc;
+}
+
+.ring-number {
+  font-weight: 700;
+  color: #fff;
+}
+
+.ring-grammar-display {
+  flex: 1;
+  margin: 0 12px;
+  font-size: 13px;
+  color: #aaa;
+  font-weight: 500;
+  font-family: monospace;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.expand-btn {
+  background: rgba(60, 60, 60, 0.8);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  min-width: 32px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.expand-btn:hover {
+  background: rgba(80, 80, 80, 0.9);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
+/* Ring header */
+.ring-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #fff;
+  font-size: 14px;
+}
+
+.ring-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.collapse-btn {
+  background: rgba(60, 60, 60, 0.8);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  min-width: 32px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.collapse-btn:hover {
+  background: rgba(80, 80, 80, 0.9);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
+.ring-visibility {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 13px;
+  color: #ccc;
+  font-weight: 500;
+}
+
+.ring-visibility input {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+  accent-color: #888;
+}
+
+/* Grammar input section */
+.grammar-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+.grammar-input-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  position: relative;
+}
+
+.updating-indicator {
+  color: #4CAF50;
+  font-size: 16px;
+  animation: spin 1s linear infinite;
+  opacity: 0.8;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.grammar-input {
+  flex: 1;
+  min-width: 200px;
+  background: rgba(40, 40, 40, 0.8);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  font-family: monospace;
+}
+
+.grammar-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(50, 50, 50, 0.9);
+}
+
+.grammar-input.error {
+  border-color: #ff4444;
+  background: rgba(255, 68, 68, 0.1);
+}
+
+.grammar-input.error:focus {
+  border-color: #ff6666;
+  background: rgba(255, 68, 68, 0.15);
+}
+
+.validation-error {
+  color: #ff4444;
+  font-size: 12px;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background: rgba(255, 68, 68, 0.1);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.grammar-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+}
+
+.grammar-submit-btn {
+  background: rgba(76, 175, 80, 0.8);
+  color: #fff;
+  border: 1px solid rgba(76, 175, 80, 0.6);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grammar-submit-btn:hover {
+  background: rgba(76, 175, 80, 1);
+  border-color: rgba(76, 175, 80, 0.8);
+  transform: translateY(-1px);
+}
+
+.grammar-submit-btn:active {
+  transform: translateY(0);
+  background: rgba(69, 160, 73, 0.9);
+}
+
+/* Symbol controls */
+.symbol-controls {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.symbol-group {
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(30, 30, 30, 0.1);
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  /* Blur effect with fallbacks */
+  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(1px);
+  /* Fallback for browsers that don't support backdrop-filter */
+  background: rgba(30, 30, 30, 0.2);
+}
+
+.symbol-group:last-child {
+  margin-bottom: 0;
+}
+
+.symbol-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ccc;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.symbol-control-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.symbol-control-row:last-child {
+  margin-bottom: 0;
+}
+
+.symbol-label {
+  min-width: 80px;
+  font-size: 11px;
+  color: #aaa;
+  flex-shrink: 0;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+.symbol-slider {
+  flex: 1;
+  min-width: 120px;
+  accent-color: #888;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.symbol-slider::-webkit-slider-thumb {
+  background: #888;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.symbol-slider::-webkit-slider-thumb:hover {
+  background: #aaa;
+  transform: scale(1.2);
+}
+
+.symbol-value {
+  min-width: 40px;
+  text-align: right;
+  font-size: 11px;
+  color: #aaa;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+/* Symbol buttons */
+.symbol-button {
+  background: rgba(60, 60, 60, 0.8);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 11px;
+  margin-right: 8px;
+  border-radius: 3px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.symbol-button:hover {
+  background: rgba(80, 80, 80, 0.9);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Stroke Color Controls */
+.stroke-color-control {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stroke-color-label {
+  display: block;
+  font-size: 11px;
+  color: #aaa;
+  margin-bottom: 8px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+.stroke-color-swatches {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.stroke-color-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.stroke-color-swatch:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: scale(1.1);
+}
+
+.stroke-color-swatch.selected {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3);
+  transform: scale(1.15);
+}
+
+.stroke-color-swatch.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: bold;
+  font-size: 10px;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+}
+
+.color-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: bold;
+  font-size: 10px;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+/* No symbols message */
+.no-symbols {
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  padding: 16px;
+  background: rgba(20, 20, 20, 0.3);
+  border-radius: 4px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .controls-layout {
+    gap: 16px;
+  }
+  
+  .control-section-full {
+    padding: 16px;
+  }
+  
+  .rings-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .rings-header .section-title {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  
+  .ring-control {
+    padding: 12px;
+  }
+  
+  .ring-collapsed-header {
+    font-size: 13px;
+    padding: 10px 0;
+  }
+  
+  .ring-grammar-display {
+    font-size: 12px;
+    margin: 0 8px;
+  }
+  
+  .expand-btn, .collapse-btn {
+    min-width: 28px;
+    height: 24px;
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  
+  .ring-header {
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  
+  .ring-header-controls {
+    gap: 8px;
+  }
+  
+  .grammar-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .grammar-input {
+    min-width: auto;
+  }
+  
+  .symbol-control-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+  
+  .symbol-label {
+    min-width: auto;
+  }
+  
+  .symbol-slider {
+    min-width: auto;
+  }
+  
+  /* Global controls responsive adjustments */
+  .global-controls-compact {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 8px;
+  }
+  
+  .global-control-label {
+    font-size: 9px;
+  }
+  
+  .global-control-value {
+    font-size: 9px;
+    padding: 1px 3px;
+  }
+}
+
+/* Tablet layout - 2 columns */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .rings-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+/* Desktop layout - 3+ columns */
+@media (min-width: 1024px) {
+  .rings-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+}
+
+/* Browser support detection and fallbacks */
+@supports not (backdrop-filter: blur(5px)) {
+  .control-section-full {
+    background: rgba(30, 30, 30, 0.95);
+  }
+  
+  .ring-control {
+    background: rgba(20, 20, 20, 0.8);
+  }
+  
+  .symbol-group {
+    background: rgba(30, 30, 30, 0.7);
+  }
+}

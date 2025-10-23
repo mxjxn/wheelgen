@@ -1,3 +1,25 @@
+// Convert PatternNode AST back to grammar string
+export function patternToGrammarString(pattern) {
+    if (typeof pattern === 'string')
+        return pattern;
+    if (pattern.type === 'command') {
+        const args = pattern.args.map((arg) => patternToGrammarString(arg)).join(', ');
+        return `${pattern.name}(${args})`;
+    }
+    if (pattern.type === 'sequence') {
+        const patterns = pattern.patterns.map((p) => patternToGrammarString(p)).join('');
+        return `$${patterns}`;
+    }
+    if (pattern.type === 'symbol') {
+        const char = pattern.rotated ? pattern.char.toUpperCase() : pattern.char;
+        const count = pattern.count && pattern.count > 1 ? pattern.count : '';
+        return `${char}${count}`;
+    }
+    if (pattern.type === 'variableReference') {
+        return `@${pattern.name}`;
+    }
+    return '';
+}
 export class PatternExpander {
     expand(ast) {
         const items = this.expandNode(ast);

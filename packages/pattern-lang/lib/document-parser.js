@@ -1,4 +1,4 @@
-import { Parser } from './parser.js';
+import { Parser } from './parser';
 export class DocumentParser {
     constructor(input) {
         this.position = 0;
@@ -116,19 +116,33 @@ export class DocumentParser {
                 const radius = parseFloat(ringMatch[1]);
                 const elementCount = parseInt(ringMatch[2], 10);
                 const patternStr = ringMatch[3];
-                // Parse the pattern
-                const patternParser = new Parser(patternStr);
-                const patternResult = patternParser.parse();
-                if (!patternResult.success) {
-                    return {
-                        success: false,
-                        error: patternResult.error
+                // Handle special case of solid ring
+                let pattern;
+                if (patternStr.trim() === '-') {
+                    // Solid ring - create a special pattern node
+                    pattern = {
+                        type: 'symbol',
+                        char: '-',
+                        rotated: false,
+                        count: 1
                     };
+                }
+                else {
+                    // Parse the pattern normally
+                    const patternParser = new Parser(patternStr);
+                    const patternResult = patternParser.parse();
+                    if (!patternResult.success) {
+                        return {
+                            success: false,
+                            error: patternResult.error
+                        };
+                    }
+                    pattern = patternResult.ast;
                 }
                 rings.push({
                     radius,
                     elementCount,
-                    pattern: patternResult.ast
+                    pattern
                 });
             }
             else {
