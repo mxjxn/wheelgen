@@ -13,8 +13,8 @@ export const DownloadButton: Component<DownloadButtonProps> = (props) => {
   const [downloadFormat, setDownloadFormat] = createSignal<'png' | 'jpeg'>('png');
   const [jpegQuality, setJpegQuality] = createSignal(0.9);
   const [customFilename, setCustomFilename] = createSignal('');
-  const [cropMode, setCropMode] = createSignal<'full' | 'square'>('full');
-  const [squareSize, setSquareSize] = createSignal(1024);
+  const [cropMode, setCropMode] = createSignal<'full' | 'square'>('square');
+  const [squareSize, setSquareSize] = createSignal(0);
 
   const handleDownload = async (options: DownloadOptions = {}) => {
     const p = props.getP();
@@ -30,7 +30,6 @@ export const DownloadButton: Component<DownloadButtonProps> = (props) => {
         format: downloadFormat(),
         quality: downloadFormat() === 'jpeg' ? jpegQuality() : undefined,
         filename: customFilename() || undefined,
-        addTimestamp: !customFilename(), // Only add timestamp if no custom filename
         cropMode: cropMode(),
         squareSize: cropMode() === 'square' ? squareSize() : undefined,
         ...options
@@ -208,7 +207,7 @@ export const DownloadButton: Component<DownloadButtonProps> = (props) => {
               <label>Filename (optional):</label>
               <input
                 type="text"
-                placeholder="Leave empty for auto-generated name"
+                placeholder="Leave empty for auto-generated filename (wheelgen-YYYY-MM-DD)"
                 value={customFilename()}
                 onInput={(e) => setCustomFilename(e.target.value)}
                 class="filename-input"

@@ -110,19 +110,16 @@ export class DownloadService {
   }
 
   /**
-   * Generate filename with timestamp if requested
+   * Generate filename with date if requested
    */
   private static generateFilename(options: DownloadOptions, extension: string): string {
-    let filename = options.filename || 'wheelgen-artwork';
-    
-    // Add timestamp if requested or if no custom filename provided
-    if (options.addTimestamp !== false && !options.filename) {
-      const timestamp = new Date().toISOString()
-        .replace(/[:.]/g, '-')
-        .replace('T', '_')
-        .slice(0, 19); // Remove milliseconds and timezone
-      filename = `${filename}_${timestamp}`;
+    if (options.filename) {
+      return `${options.filename}.${extension}`;
     }
+    
+    // Generate auto filename with date format: wheelgen-YYYY-MM-DD
+    const date = new Date().toISOString().split('T')[0]; // Get YYYY-MM-DD format
+    const filename = `wheelgen-${date}`;
     
     return `${filename}.${extension}`;
   }

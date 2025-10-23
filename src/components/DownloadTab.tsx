@@ -13,8 +13,8 @@ export const DownloadTab: Component<DownloadTabProps> = (props) => {
   const [downloadFormat, setDownloadFormat] = createSignal<'png' | 'jpeg'>('png');
   const [jpegQuality, setJpegQuality] = createSignal(0.9);
   const [customFilename, setCustomFilename] = createSignal('');
-  const [cropMode, setCropMode] = createSignal<'full' | 'square'>('full');
-  const [squareSize, setSquareSize] = createSignal(1024);
+  const [cropMode, setCropMode] = createSignal<'full' | 'square'>('square');
+  const [squareSize, setSquareSize] = createSignal(0);
 
   const handleDownload = async (options: DownloadOptions = {}) => {
     const p = props.getP();
@@ -30,7 +30,6 @@ export const DownloadTab: Component<DownloadTabProps> = (props) => {
         format: downloadFormat(),
         quality: downloadFormat() === 'jpeg' ? jpegQuality() : undefined,
         filename: customFilename() || undefined,
-        addTimestamp: !customFilename(),
         cropMode: cropMode(),
         squareSize: cropMode() === 'square' ? squareSize() : undefined,
         ...options
@@ -149,7 +148,7 @@ export const DownloadTab: Component<DownloadTabProps> = (props) => {
           type="text"
           value={customFilename()}
           onInput={(e) => setCustomFilename(e.target.value)}
-          placeholder="e.g., MyAwesomeArt"
+          placeholder="Leave empty for auto-generated filename (wheelgen-YYYY-MM-DD)"
           class="control-input"
         />
       </div>
