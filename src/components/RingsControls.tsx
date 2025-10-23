@@ -6,6 +6,7 @@ import {
   For,
   Show,
   onCleanup,
+  onMount,
 } from "solid-js";
 import {
   rings,
@@ -15,8 +16,13 @@ import {
   palette,
   setStrokeColorAssignment,
   colorAssignment,
+  globals,
+  updateGlobalSetting,
+  hasChanges,
+  clearChanges,
 } from "../store/artwork";
 import { colorToRgbString, batchConvertColorsToRgb } from "../core/color";
+import type { Ring } from "../model/ring";
 
 // Props interface
 interface RingsControlsProps {
@@ -43,12 +49,16 @@ const RingControl: Component<{
   const [isVisible, setIsVisible] = createSignal(storeRing()?.visible || false);
   const [isUpdating, setIsUpdating] = createSignal(false);
 
-  // Update local state when ring changes
+  // Update local state when ring changes - force update on any ring change
   createEffect(() => {
     const ring = storeRing();
     if (ring) {
       setGrammarString(ring.grammarString || "");
       setIsVisible(ring.visible);
+    } else {
+      // If ring doesn't exist, reset to defaults
+      setGrammarString("");
+      setIsVisible(false);
     }
   });
 
@@ -513,6 +523,143 @@ const StrokeColorControl: Component<{
   );
 };
 
+// Global Controls Component
+const GlobalControls: Component<RingsControlsProps> = (props) => {
+  // Reactive values from store
+  const [randomness, setRandomness] = createSignal(globals().randomness);
+  const [strokeCount, setStrokeCount] = createSignal(globals().strokeCount);
+  const [colorBleed, setColorBleed] = createSignal(globals().colorBleed);
+  const [globalStrokeWidth, setGlobalStrokeWidth] = createSignal(globals().globalStrokeWidth);
+
+  // Auto-rerender system for global controls
+  let intervalId: ReturnType<typeof setInterval> | undefined;
+
+  // Update local signals when store changes
+  createEffect(() => {
+    const currentGlobals = globals();
+    setRandomness(currentGlobals.randomness);
+    setStrokeCount(currentGlobals.strokeCount);
+    setColorBleed(currentGlobals.colorBleed);
+    setGlobalStrokeWidth(currentGlobals.globalStrokeWidth);
+  });
+
+  // Auto-rerender timer
+  onMount(() => {
+    const startTimer = () => {
+      intervalId = setInterval(() => {
+        performRerender();
+      }, 800); // 800ms interval
+    };
+
+    startTimer();
+  });
+
+  onCleanup(() => {
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+  });
+
+  // Handlers
+  const performRerender = () => {
+    if (hasChanges()) {
+      // Update all particles' stroke data before redrawing
+      const p = props.getP();
+      if (p) {
+        // Get current rings and update their particles
+        const currentRings = rings();
+        currentRings.forEach((ring: Ring) => {
+          if (!ring.isSolidRing) {
+            ring.updateParticles(p);
+          }
+        });
+      }
+      clearChanges();
+      props.requestRedraw();
+    }
+  };
+
+  const handleRandomnessChange = (value: number) => {
+    setRandomness(value);
+    updateGlobalSetting('randomness', value);
+  };
+
+  const handleStrokeCountChange = (value: number) => {
+    setStrokeCount(value);
+    updateGlobalSetting('strokeCount', value);
+  };
+
+  const handleColorBleedChange = (value: number) => {
+    setColorBleed(value);
+    updateGlobalSetting('colorBleed', value);
+  };
+
+  const handleGlobalStrokeWidthChange = (value: number) => {
+    setGlobalStrokeWidth(value);
+    updateGlobalSetting('globalStrokeWidth', value);
+  };
+
+  return (
+    <div class="global-controls-compact">
+      <div class="global-control-item">
+        <label class="global-control-label">Randomness</label>
+        <input
+          type="range"
+          min="0"
+          max="0.35"
+          step="0.01"
+          value={randomness()}
+          onChange={(e) => handleRandomnessChange(Number(e.currentTarget.value))}
+          class="global-control-range"
+        />
+        <span class="global-control-value">{randomness().toFixed(2)}</span>
+      </div>
+
+      <div class="global-control-item">
+        <label class="global-control-label">Stroke Count</label>
+        <input
+          type="range"
+          min="6"
+          max="50"
+          step="1"
+          value={strokeCount()}
+          onChange={(e) => handleStrokeCountChange(Number(e.currentTarget.value))}
+          class="global-control-range"
+        />
+        <span class="global-control-value">{strokeCount()}</span>
+      </div>
+
+      <div class="global-control-item">
+        <label class="global-control-label">Color Bleed</label>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={colorBleed()}
+          onChange={(e) => handleColorBleedChange(Number(e.currentTarget.value))}
+          class="global-control-range"
+        />
+        <span class="global-control-value">{colorBleed().toFixed(2)}</span>
+      </div>
+
+      <div class="global-control-item">
+        <label class="global-control-label">Stroke Width</label>
+        <input
+          type="range"
+          min="-5"
+          max="35"
+          step="0.1"
+          value={globalStrokeWidth()}
+          onChange={(e) => handleGlobalStrokeWidthChange(Number(e.currentTarget.value))}
+          class="global-control-range"
+        />
+        <span class="global-control-value">{globalStrokeWidth().toFixed(1)}</span>
+      </div>
+    </div>
+  );
+};
+
 // Main RingsControls component
 export const RingsControls: Component<RingsControlsProps> = (props) => {
   // Sort rings from outer to inner (largest radius to smallest) - memoized for performance
@@ -521,10 +668,16 @@ export const RingsControls: Component<RingsControlsProps> = (props) => {
     return [...currentRings].sort((a, b) => b.radius - a.radius);
   });
 
+  // Force re-render when rings change by accessing the rings signal
+  createEffect(() => {
+    rings(); // This ensures the component reacts to ring changes
+  });
+
   return (
     <div class="rings-controls">
       <div class="rings-header">
         <h3 class="section-title">Ring Controls</h3>
+        <GlobalControls getP={props.getP} requestRedraw={props.requestRedraw} />
       </div>
       <div class="rings-grid">
         <For each={sortedRings()}>

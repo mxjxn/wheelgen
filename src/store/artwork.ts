@@ -422,10 +422,7 @@ export const initializeArtwork = (p: p5) => {
     newRings.push(ring);
   }
 
-  // Set rings BEFORE calling setPattern so particles can access them
-  setRingsOriginal(newRings);
-
-  // Now set patterns (which creates particles)
+  // Set patterns (which creates particles) BEFORE setting rings in store
   for (let i = 0; i < numRings; i++) {
     const ring = newRings[i];
     // Initialize 3 smallest rings invisible
@@ -440,6 +437,9 @@ export const initializeArtwork = (p: p5) => {
       ring.visible = true;
     }
   }
+
+  // Set rings AFTER they are fully configured
+  setRingsOriginal(newRings);
 
   const innermostRing = newRings[newRings.length - 1];
   setInnerDot({

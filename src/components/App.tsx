@@ -1,5 +1,5 @@
 import { Component, onMount, onCleanup, createSignal, Show } from 'solid-js';
-import { hasChanges, initializeArtwork, clearChanges, forceSave, rings } from '../store/artwork';
+import { hasChanges, initializeArtwork, clearChanges, forceSave, rings, randomizeArtwork } from '../store/artwork';
 import { RingsControls } from './RingsControls';
 import { ActionsControls } from './ActionsControls';
 import { ColorManagementPanel } from './ColorManagementPanel';
@@ -109,6 +109,13 @@ export const App: Component<AppProps> = (props) => {
     }
   };
 
+  const handleRandomize = () => {
+    if (props.p5Instance) {
+      randomizeArtwork(props.p5Instance);
+      handleRequestRedraw();
+    }
+  };
+
   // Toggle overlay visibility
   const toggleOverlay = () => {
     setShowOverlay(!showOverlay());
@@ -125,9 +132,18 @@ export const App: Component<AppProps> = (props) => {
         <div class="overlay-ui">
           <div class="overlay-header">
             <h1>WheelGen Controls</h1>
-            <button class="close-overlay" onClick={toggleOverlay} title="Close controls (Esc)">
-              ✕
-            </button>
+            <div class="header-controls">
+              <button 
+                class="randomize-button" 
+                onClick={handleRandomize}
+                title="Randomize artwork"
+              >
+                🎲 Randomize
+              </button>
+              <button class="close-overlay" onClick={toggleOverlay} title="Close controls (Esc)">
+                ✕
+              </button>
+            </div>
           </div>
           
           <div class="overlay-content">
@@ -149,20 +165,23 @@ export const App: Component<AppProps> = (props) => {
                   }
                 },
                 {
-                  id: 'grammar',
-                  label: 'Grammar',
-                  icon: '📝',
-                  content: GrammarRules,
+                  id: 'center-dot',
+                  label: 'Center',
+                  icon: '🔴',
+                  content: CenterDotControls,
                   props: {
-                    onExampleClick: (example: string) => {
-                      // This will be handled by the GrammarRules component
-                      // Users can copy examples to their grammar inputs
-                    }
+                    getP: () => {
+                      if (!props.p5Instance) {
+                        return null;
+                      }
+                      return props.p5Instance;
+                    },
+                    requestRedraw: handleRequestRedraw
                   }
                 },
                 {
                   id: 'colors',
-                  label: 'Colors',
+                  label: 'Color',
                   icon: '🎨',
                   content: ColorManagementPanel,
                   props: {
@@ -176,25 +195,10 @@ export const App: Component<AppProps> = (props) => {
                   }
                 },
                 {
-                  id: 'actions',
-                  label: 'Actions',
-                  icon: '⚡',
-                  content: ActionsControls,
-                  props: {
-                    getP: () => {
-                      if (!props.p5Instance) {
-                        return null;
-                      }
-                      return props.p5Instance;
-                    },
-                    requestRedraw: handleRequestRedraw
-                  }
-                },
-                {
-                  id: 'center-dot',
-                  label: 'Center Dot',
-                  icon: '🔴',
-                  content: CenterDotControls,
+                  id: 'positioning',
+                  label: 'Positioning',
+                  icon: '🔍',
+                  content: PositioningTab,
                   props: {
                     getP: () => {
                       if (!props.p5Instance) {
@@ -221,24 +225,9 @@ export const App: Component<AppProps> = (props) => {
                   }
                 },
                 {
-                  id: 'performance',
-                  label: 'Performance',
-                  icon: '📊',
-                  content: PerformanceTab,
-                  props: {
-                    getP: () => {
-                      if (!props.p5Instance) {
-                        return null;
-                      }
-                      return props.p5Instance;
-                    },
-                    requestRedraw: handleRequestRedraw
-                  }
-                },
-                {
                   id: 'download',
                   label: 'Download',
-                  icon: '💾',
+                  icon: '📥',
                   content: DownloadTab,
                   props: {
                     getP: () => {
@@ -251,10 +240,10 @@ export const App: Component<AppProps> = (props) => {
                   }
                 },
                 {
-                  id: 'positioning',
-                  label: 'Positioning',
-                  icon: '🔍',
-                  content: PositioningTab,
+                  id: 'performance',
+                  label: 'Performance',
+                  icon: '📊',
+                  content: PerformanceTab,
                   props: {
                     getP: () => {
                       if (!props.p5Instance) {

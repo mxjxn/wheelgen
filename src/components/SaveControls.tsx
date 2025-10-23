@@ -5,7 +5,6 @@ import {
   setHasChanges,
   clearChanges, 
   setNewPalette, 
-  randomizeArtwork, 
   guidesVisible, 
   setGuidesVisible,
   globals,
@@ -133,14 +132,6 @@ export const SaveControls: Component<SaveControlsProps> = (props) => {
     }
   };
 
-  const handleRandomize = () => {
-    const p = props.getP();
-    if (p) {
-      randomizeArtwork(p);
-      // Trigger a redraw to show the randomized artwork
-      props.requestRedraw();
-    }
-  };
 
   const handleGuidesToggle = (checked: boolean) => {
     setGuidesVisible(checked);
@@ -253,13 +244,6 @@ export const SaveControls: Component<SaveControlsProps> = (props) => {
         New Palette
       </button>
 
-      {/* Randomize Button */}
-      <button
-        onClick={handleRandomize}
-        class="action-button"
-      >
-        Randomize
-      </button>
 
 
       {/* Show Guides Checkbox */}

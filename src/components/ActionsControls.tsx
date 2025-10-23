@@ -1,13 +1,10 @@
-import { Component, createEffect, createSignal, onMount, onCleanup } from 'solid-js';
+import { Component, createSignal, onMount, onCleanup } from 'solid-js';
 import { 
   hasChanges, 
   clearChanges, 
   setNewPalette, 
-  randomizeArtwork, 
   guidesVisible, 
   setGuidesVisible,
-  globals,
-  updateGlobalSetting,
   rings
 } from '../store/artwork';
 import type { Ring } from '../model/ring';
@@ -20,24 +17,9 @@ interface ActionsControlsProps {
 }
 
 export const ActionsControls: Component<ActionsControlsProps> = (props) => {
-  // Reactive values from store
-  const [randomness, setRandomness] = createSignal(globals().randomness);
-  const [strokeCount, setStrokeCount] = createSignal(globals().strokeCount);
-  const [colorBleed, setColorBleed] = createSignal(globals().colorBleed);
-  const [globalStrokeWidth, setGlobalStrokeWidth] = createSignal(globals().globalStrokeWidth);
-
   // Auto-rerender system
   const [isAutoRendering, setIsAutoRendering] = createSignal(true);
   let intervalId: ReturnType<typeof setInterval> | undefined;
-
-  // Update local signals when store changes
-  createEffect(() => {
-    const currentGlobals = globals();
-    setRandomness(currentGlobals.randomness);
-    setStrokeCount(currentGlobals.strokeCount);
-    setColorBleed(currentGlobals.colorBleed);
-    setGlobalStrokeWidth(currentGlobals.globalStrokeWidth);
-  });
 
   // Auto-rerender timer
   onMount(() => {
@@ -102,39 +84,12 @@ export const ActionsControls: Component<ActionsControlsProps> = (props) => {
     }
   };
 
-  const handleRandomize = () => {
-    const p = props.getP();
-    if (p) {
-      randomizeArtwork(p);
-      // Trigger a redraw to show the randomized artwork
-      props.requestRedraw();
-    }
-  };
 
   const handleGuidesToggle = (checked: boolean) => {
     setGuidesVisible(checked);
     props.requestRedraw();
   };
 
-  const handleRandomnessChange = (value: number) => {
-    setRandomness(value);
-    updateGlobalSetting('randomness', value);
-  };
-
-  const handleStrokeCountChange = (value: number) => {
-    setStrokeCount(value);
-    updateGlobalSetting('strokeCount', value);
-  };
-
-  const handleColorBleedChange = (value: number) => {
-    setColorBleed(value);
-    updateGlobalSetting('colorBleed', value);
-  };
-
-  const handleGlobalStrokeWidthChange = (value: number) => {
-    setGlobalStrokeWidth(value);
-    updateGlobalSetting('globalStrokeWidth', value);
-  };
 
   return (
     <div class="ring-control">
@@ -167,13 +122,6 @@ export const ActionsControls: Component<ActionsControlsProps> = (props) => {
         New Palette
       </button>
 
-      {/* Randomize Button */}
-      <button
-        onClick={handleRandomize}
-        class="action-button"
-      >
-        Randomize
-      </button>
 
       {/* Show Guides Checkbox */}
       <label class="guides-checkbox">
@@ -185,72 +133,6 @@ export const ActionsControls: Component<ActionsControlsProps> = (props) => {
         Show Guides
       </label>
 
-      {/* Global Randomness Control */}
-      <div class="control-section">
-        <label class="control-label">
-          Randomness: {randomness().toFixed(2)}
-        </label>
-        <input
-          type="range"
-          min="0"
-          max="0.35"
-          step="0.01"
-          value={randomness()}
-          onChange={(e) => handleRandomnessChange(Number(e.currentTarget.value))}
-          class="control-range"
-        />
-      </div>
-
-      {/* Global Stroke Count Control */}
-      <div class="control-section">
-        <label class="control-label">
-          Stroke Count: {strokeCount()}
-        </label>
-        <input
-          type="range"
-          min="6"
-          max="50"
-          step="1"
-          value={strokeCount()}
-          onChange={(e) => handleStrokeCountChange(Number(e.currentTarget.value))}
-          class="control-range"
-        />
-      </div>
-
-      {/* Global Color Bleed Control */}
-      <div class="control-section">
-        <label class="control-label">
-          Color Bleed: {colorBleed().toFixed(2)}
-        </label>
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value={colorBleed()}
-          onChange={(e) => handleColorBleedChange(Number(e.currentTarget.value))}
-          class="control-range"
-        />
-      </div>
-
-      {/* Global Stroke Width Control */}
-      <div class="control-section">
-        <label class="control-label">
-          Global Stroke Width: {globalStrokeWidth().toFixed(1)}
-        </label>
-        <input
-          type="range"
-          min="-5"
-          max="35"
-          step="0.1"
-          value={globalStrokeWidth()}
-          onChange={(e) => handleGlobalStrokeWidthChange(Number(e.currentTarget.value))}
-          class="control-range"
-        />
-        <div class="control-description">
-          <small>Adds/subtracts from all stroke widths</small>
-        </div>
-      </div>
     </div>
   );
 };

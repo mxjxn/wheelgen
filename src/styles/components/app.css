@@ -71,6 +71,38 @@
   z-index: 1001;
 }
 
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.randomize-button {
+  background: rgba(76, 175, 80, 0.8);
+  color: #fff;
+  border: 1px solid rgba(76, 175, 80, 0.6);
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.randomize-button:hover {
+  background: rgba(76, 175, 80, 1);
+  border-color: rgba(76, 175, 80, 0.8);
+  transform: translateY(-1px);
+}
+
+.randomize-button:active {
+  transform: translateY(0);
+  background: rgba(69, 160, 73, 0.9);
+}
+
 .overlay-header h1 {
   color: white;
   margin: 0;
