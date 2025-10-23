@@ -12,6 +12,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automated deployment with version tagging
 - CHANGELOG.md for tracking updates
 
+## [2.3.1] - 2024-12-19
+
+### Changed
+- **UI Reorganization**: Moved global controls (Randomness, Stroke Count, Color Bleed, Global Stroke Width) from Actions tab to Rings tab with compact horizontal layout
+- **Randomize Button**: Converted randomize from tab to prominent header button with green styling for better accessibility
+- **Tab Order**: Reorganized tabs to logical flow: Rings → Center → Color → Positioning → Save → Download → Performance
+- **Tab Cleanup**: Removed redundant Grammar and Actions tabs (functionality integrated into other tabs)
+
+### Fixed
+- **Randomization Reactivity**: Fixed ring controls not updating after randomization - now all parameters update immediately
+- **State Management**: Improved ring initialization order to ensure rings are fully configured before setting in store
+- **UI Responsiveness**: Enhanced reactivity in ring controls to properly respond to store changes
+
+### Improved
+- **UX**: More intuitive tab organization and prominent randomize action
+- **Performance**: Better state management reduces unnecessary re-renders
+- **Responsive Design**: Added mobile-friendly CSS for compact global controls layout
+
 ## [2.0.1] - 2024-01-XX
 
 ### Added
